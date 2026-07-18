@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold-accent: #C5A880;
+  --color-gold-bg: #F4EFEA;
+  --color-gold-dark: #1F1A13;
+  --color-silver-accent: #E5E7EB;
+  --color-brand-apple: #F5F5F7;
+  --color-brand-google: #DDE1E6;
+  --color-brand-nothing: #F2F4F8;
+  --color-brand-oneplus: #A81C24;
+
+  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.01);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+  --shadow-soft-ui: 0 4px 24px rgba(0, 0, 0, 0.03);
+
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  background-color: #FAF9F6; /* Premium Alabaster / Warm White background */
+  color: #0D0D0D;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* ── Checkout page section card ─────────────────────────────────────────── */
+.checkout-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1.5rem;      /* rounded-3xl equivalent */
+  padding: 1.25rem;           /* p-5 equivalent */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+}
+
+@media (min-width: 640px) {
+  .checkout-card {
+    padding: 1.5rem;
+  }
+}
+
+/* ── WCAG AA Keyboard Focus Outline Ring ───────────────────────────────── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #C5A880;
+  outline-offset: 2px;
+}
+
+/* ── Premium Skeleton Shimmer Effect (1.4s linear) ─────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f5f5f7 25%, #e9e9ed 50%, #f5f5f7 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* ── Premium Page Transitions ───────────────────────────────────────────── */
+@keyframes pageFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-in {
+  animation: pageFadeInUp 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Section Reveal Utilities ───────────────────────────────────────────── */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 550ms cubic-bezier(0.16, 1, 0.3, 1), transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+

@@ -1,0 +1,171 @@
+import React, { useState } from 'react';
+import { Trash2, Heart, Plus, Minus, ShieldCheck } from 'lucide-react';
+import { useWishlist } from '../../context/WishlistContext';
+
+/* ==========================================================================
+   CartItemCard Component
+   - Renders a single shopping cart item card row
+   - Displays dynamic variants (capacity, selected color) and prices
+   - Mounts the animated QuantitySelector stepper
+   ========================================================================== */
+
+export const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const { product, selectedStorage, selectedColor, quantity } = item;
+
+  const liked = isWishlisted(product.id);
+
+  const handleMoveToWishlist = () => {
+    toggleWishlist(product);
+    onRemove(product.id, selectedStorage, selectedColor);
+  };
+
+  return (
+    <div className="w-full flex items-start gap-4 p-4 border border-gray-150/40 rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.01)] select-none text-left relative group">
+      
+      {/* 1. Left product thumbnail image */}
+      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#FAF9F6]/80 rounded-xl flex items-center justify-center shrink-0 p-2 overflow-hidden border border-gray-100">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="h-full w-auto object-contain object-bottom"
+        />
+      </div>
+
+      {/* 2. Middle Content descriptions */}
+      <div className="flex-1 min-w-0">
+        
+        {/* Condition certified badge tag */}
+        <span className={`inline-block px-2 py-0.5 text-[8px] font-black uppercase tracking-wider rounded mb-1.5 ${
+          product.conditionType === 'New' 
+            ? 'bg-neutral-900 text-white' 
+            : 'bg-amber-50 text-amber-600 border border-amber-250/20'
+        }`}>
+          {product.conditionType === 'New' ? 'Sealed Box' : 'Certified'}
+        </span>
+
+        {/* Title */}
+        <h4 className="text-xs sm:text-sm font-extrabold text-neutral-950 truncate leading-tight">
+          {product.name}
+        </h4>
+
+        {/* Variant summary list */}
+        <p className="text-[9.5px] sm:text-[10.5px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
+          {selectedStorage} • {selectedColor}
+        </p>
+
+        {/* Pricing Row */}
+        <div className="flex items-baseline gap-2 mt-2">
+          <span className="text-sm font-black text-neutral-950">
+            {product.price}
+          </span>
+          {product.originalPrice && (
+            <span className="text-[10px] sm:text-xs text-gray-400 line-through font-semibold">
+              {product.originalPrice}
+            </span>
+          )}
+          {product.discount && (
+            <span className="text-[9.5px] font-extrabold text-amber-600">
+              {product.discount}
+            </span>
+          )}
+        </div>
+
+        {/* Stepper & Actions bottom bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-3 pt-3 border-t border-gray-100/60 w-full">
+          {/* Quantity Stepper selector */}
+          <QuantitySelector 
+            value={quantity}
+            onChange={(newVal) => onUpdateQuantity(product.id, selectedStorage, selectedColor, newVal)}
+          />
+
+          {/* Quick operations */}
+          <div className="flex items-center gap-2 text-gray-400">
+            {/* Wishlist toggle */}
+            <button
+              type="button"
+              onClick={handleMoveToWishlist}
+              className="p-1.5 hover:bg-neutral-100 hover:text-[#C5A880] rounded-full transition-all cursor-pointer"
+              title="Move to Wishlist"
+            >
+              <Heart size={14} className={liked ? 'fill-[#C5A880] text-[#C5A880]' : ''} strokeWidth={2.4} />
+            </button>
+            {/* Trash Bin */}
+            <button
+              type="button"
+              onClick={() => onRemove(product.id, selectedStorage, selectedColor)}
+              className="p-1.5 hover:bg-neutral-100 hover:text-red-500 rounded-full transition-all cursor-pointer"
+              title="Remove Item"
+            >
+              <Trash2 size={14} strokeWidth={2.2} />
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  );
+};
+
+/* ==========================================================================
+   QuantitySelector Subcomponent
+   - Plus / Minus stepper inputs
+   - Subtle scale-down click bounce animations (active:scale-88)
+   ========================================================================== */
+
+export const QuantitySelector = ({ value = 1, onChange }) => {
+  const [clickState, setClickState] = useState({ minus: false, plus: false });
+
+  const handleDecrease = () => {
+    if (value > 1) {
+      setClickState((prev) => ({ ...prev, minus: true }));
+      setTimeout(() => setClickState((prev) => ({ ...prev, minus: false })), 150);
+      onChange && onChange(value - 1);
+    }
+  };
+
+  const handleIncrease = () => {
+    setClickState((prev) => ({ ...prev, plus: true }));
+    setTimeout(() => setClickState((prev) => ({ ...prev, plus: false })), 150);
+    onChange && onChange(value + 1);
+  };
+
+  return (
+    <div className="flex items-center bg-[#FAF9F6] border border-gray-200/50 rounded-xl px-1 py-0.5 shadow-sm scale-95 origin-left select-none">
+      
+      {/* Minus Button */}
+      <button
+        type="button"
+        disabled={value <= 1}
+        onClick={handleDecrease}
+        className={`w-6 h-6 rounded-lg flex items-center justify-center text-gray-500 hover:text-neutral-900 hover:bg-white transition-all cursor-pointer ${
+          clickState.minus ? 'scale-85 bg-white' : 'scale-100'
+        } ${value <= 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
+        aria-label="Decrease quantity"
+      >
+        <Minus size={11} strokeWidth={2.8} />
+      </button>
+
+      {/* Numerical count */}
+      <span className="text-[11.5px] font-black text-neutral-950 w-7 text-center">
+        {value}
+      </span>
+
+      {/* Plus Button */}
+      <button
+        type="button"
+        onClick={handleIncrease}
+        className={`w-6 h-6 rounded-lg flex items-center justify-center text-gray-500 hover:text-neutral-900 hover:bg-white transition-all cursor-pointer ${
+          clickState.plus ? 'scale-85 bg-white' : 'scale-100'
+        }`}
+        aria-label="Increase quantity"
+      >
+        <Plus size={11} strokeWidth={2.8} />
+      </button>
+
+    </div>
+  );
+};
+
+export default CartItemCard;
