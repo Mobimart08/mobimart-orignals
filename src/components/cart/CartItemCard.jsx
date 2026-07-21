@@ -14,6 +14,7 @@ export const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
   const { product, selectedStorage, selectedColor, quantity } = item;
 
   const liked = isWishlisted(product.id);
+  
 
   const handleMoveToWishlist = () => {
     toggleWishlist(product);
