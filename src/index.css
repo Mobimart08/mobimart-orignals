@@ -102,3 +102,21 @@ textarea:focus-visible {
   transform: translateY(0);
 }
 
+/* ── Mobimart Originals Banner Animation ───────────────────────────────── */
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-banner-fade-in {
+  animation: bannerFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+

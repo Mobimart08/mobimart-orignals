@@ -11,6 +11,10 @@ import Reviews from '../components/home/Reviews';
 import Newsletter from '../components/home/Newsletter';
 import SEO from '../components/ui/SEO';
 import ScrollReveal from '../components/ui/ScrollReveal';
+import mobimartOriginalsBannerBg from '../assets/mobimart_originals_banner_bg.png';
+import mobimartLogo from '../assets/mobimart_logo.png';
+
+
 
 /* ==========================================================================
    Home Page Component
@@ -42,6 +46,32 @@ export const Home = () => {
         schema={orgSchema}
       />
       <div className="flex flex-col w-full min-h-screen">
+        {/* Mobimart Originals Banner (Mobile Only) */}
+        <div className="block md:hidden w-full overflow-hidden aspect-[16/9] relative animate-banner-fade-in">
+          {/* Banner Background */}
+          <img 
+            src={mobimartOriginalsBannerBg} 
+            alt="Mobimart Originals Banner Background" 
+            width="1024"
+            height="576"
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover block"
+          />
+          {/* Logo Overlay - covering 80% height of the banner, centered */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <img 
+              src={mobimartLogo} 
+              alt="Mobimart Originals Logo" 
+              width="612"
+              height="408"
+              loading="lazy"
+              decoding="async"
+              className="h-[80%] w-auto object-contain"
+            />
+          </div>
+        </div>
+
         {/* Sections: */}
         <ScrollReveal>
           <Hero />
