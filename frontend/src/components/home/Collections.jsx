@@ -87,11 +87,11 @@ export const Collections = () => {
               </div>
 
               {/* Right: Image */}
-              <div className="absolute top-0 bottom-0 right-0 w-[48%] md:w-[45%] h-full z-10 overflow-hidden pointer-events-none p-4 sm:p-6 md:p-4 flex items-center justify-end">
+              <div className="absolute top-0 bottom-0 right-0 w-[55%] md:w-[45%] h-full z-10 pointer-events-none p-2 sm:p-6 md:p-4 flex items-center justify-end">
                 <img 
                   src={collectionAndroid} 
                   alt="Flagship Android" 
-                  className="w-full h-full object-contain object-right md:object-right select-none pointer-events-none transition-all duration-300 scale-150 md:scale-100 opacity-95 group-hover:opacity-100 origin-right"
+                  className="w-full h-full object-contain object-right md:object-right select-none pointer-events-none transition-all duration-300 scale-[1.3] md:scale-100 -translate-x-4 md:translate-x-0 opacity-95 group-hover:opacity-100 origin-right"
                 />
               </div>
             </Card>
