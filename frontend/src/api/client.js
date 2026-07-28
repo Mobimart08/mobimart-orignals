@@ -5,9 +5,16 @@ let API_URL = import.meta.env.PROD
   ? (staticApiUrl || '') 
   : (staticApiUrl || `http://${window.location.hostname}:5000/api/v1`);
 
-if (API_URL && !API_URL.includes('/api/v1')) {
-  API_URL = API_URL.replace(/\/$/, '') + '/api/v1';
+if (API_URL) {
+  if (!/^https?:\/\//i.test(API_URL)) {
+    API_URL = 'https://' + API_URL;
+  }
+  if (!API_URL.match(/\/api\/v1\/?$/i)) {
+    API_URL = API_URL.replace(/\/$/, '') + '/api/v1';
+  }
 }
+
+export { API_URL };
 
 let inMemoryAccessToken = null;
 
