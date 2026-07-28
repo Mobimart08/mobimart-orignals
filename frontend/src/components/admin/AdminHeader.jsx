@@ -12,7 +12,7 @@ const AdminHeader = ({ toggleMobileMenu }) => {
           className="lg:hidden p-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors"
         >
           <Menu size={20} />
-        </button>
+        </button>   
         
         <div className="hidden md:flex items-center relative">
           <Search size={16} className="absolute left-3 text-neutral-400" />
