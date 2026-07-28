@@ -68,13 +68,17 @@ export const addItemToCart = async (userId, { productId, selectedStorage, select
   }
 
   // Verify options are valid for this product
-  if (!product.storageOptions.includes(selectedStorage)) {
-    throw new BadRequestError(`Invalid storage variant '${selectedStorage}' chosen`);
+  if (product.storageOptions && product.storageOptions.length > 0) {
+    if (!product.storageOptions.includes(selectedStorage)) {
+      throw new BadRequestError(`Invalid storage variant '${selectedStorage}' chosen`);
+    }
   }
 
-  const colorExists = product.colorOptions.some((c) => c.name === selectedColor);
-  if (!colorExists) {
-    throw new BadRequestError(`Invalid color variant '${selectedColor}' chosen`);
+  if (product.colorOptions && product.colorOptions.length > 0) {
+    const colorExists = product.colorOptions.some((c) => c.name === selectedColor);
+    if (!colorExists) {
+      throw new BadRequestError(`Invalid color variant '${selectedColor}' chosen`);
+    }
   }
 
   const cart = await getOrCreateCart(userId);

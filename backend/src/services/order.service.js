@@ -62,10 +62,18 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
       }
 
       // Verify variant selection exists in flat schema options
-      const hasStorage = product.storageOptions.includes(cartItem.selectedStorage);
-      const hasColor = product.colorOptions.some(c => c.name === cartItem.selectedColor);
-      if (!hasStorage || !hasColor) {
-        throw new ApiError(400, `Selected variant for ${product.name} is unavailable`);
+      if (product.storageOptions && product.storageOptions.length > 0) {
+        const hasStorage = product.storageOptions.includes(cartItem.selectedStorage);
+        if (!hasStorage) {
+          throw new ApiError(400, `Selected storage variant for ${product.name} is unavailable`);
+        }
+      }
+
+      if (product.colorOptions && product.colorOptions.length > 0) {
+        const hasColor = product.colorOptions.some(c => c.name === cartItem.selectedColor);
+        if (!hasColor) {
+          throw new ApiError(400, `Selected color variant for ${product.name} is unavailable`);
+        }
       }
 
       // Atomically check and decrement stock to prevent race conditions / overselling

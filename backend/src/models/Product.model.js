@@ -142,6 +142,21 @@ const productSchema = new mongoose.Schema(
       default: {},
     },
 
+    storageOptions: {
+      type: [String],
+      default: [],
+    },
+
+    colorOptions: {
+      type: [
+        {
+          name: { type: String, required: true },
+          hexValue: { type: String },
+        }
+      ],
+      default: [],
+    },
+
     stock: {
       type: Number,
       required: [true, 'Stock count is required'],
