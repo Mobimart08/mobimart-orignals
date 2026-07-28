@@ -11,18 +11,38 @@ export const AuthProvider = ({ children }) => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const channelRef = useRef(null);
 
+  const restorePromiseRef = useRef(null);
+
   const restoreSession = useCallback(async () => {
-    // We no longer manually call authService.refresh() here.
-    // By relying purely on apiClient, we leverage its built-in Token Refresh Rotation lock (isRefreshing).
-    // This prevents race conditions where React Strict Mode double-mounts or other Contexts 
-    // fire API calls simultaneously, avoiding "Session has expired" token reuse errors.
-    const profileResponse = await userService.getProfile({ silent: true });
-    
-    // If the request succeeds, it means either:
-    // 1. We had a valid access token in memory.
-    // 2. The interceptor successfully used our HttpOnly refresh cookie to get a new access token.
-    setUser(profileResponse.data.data);
-    return profileResponse.data.data;
+    // 1. Prevent React 18 Strict Mode double-invocation race conditions
+    if (restorePromiseRef.current) {
+      return restorePromiseRef.current;
+    }
+
+    restorePromiseRef.current = (async () => {
+      try {
+        // 2. Explicitly request a refresh token on startup BEFORE any other API calls
+        const refreshResponse = await authService.refresh();
+        const newAccessToken = refreshResponse.data.data.accessToken;
+        
+        // 3. Store the new access token securely in memory
+        setAccessToken(newAccessToken);
+
+        // 4. Fetch the user profile using the new access token
+        const profileResponse = await userService.getProfile({ silent: true });
+        
+        // 5. Restore the authenticated user
+        setUser(profileResponse.data.data);
+        return profileResponse.data.data;
+      } catch (error) {
+        throw error;
+      } finally {
+        // 6. Clear the lock
+        restorePromiseRef.current = null;
+      }
+    })();
+
+    return restorePromiseRef.current;
   }, []);
 
   const broadcastAuthEvent = useCallback((type) => {
