@@ -1,0 +1,29 @@
+/* ==========================================================================
+   src/utils/slugify.js
+   Pure utility function to convert text strings to URL-safe slugs.
+
+   Example:
+     slugify("iPhone 15 Pro Max!") -> "iphone-15-pro-max"
+   ========================================================================== */
+
+/**
+ * Generates a URL-safe lowercase slug from a text string.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
+export const slugify = (text) => {
+  if (!text) return '';
+
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+};
+
+export default slugify;
