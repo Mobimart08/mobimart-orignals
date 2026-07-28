@@ -15,7 +15,8 @@ export const authService = {
   logout: () => apiClient.post('/auth/logout'),
   forgotPassword: (email) => apiClient.post('/auth/forgot-password', { email }),
   resetPassword: (data) => apiClient.post('/auth/reset-password', data),
-  verifyEmail: (token) => apiClient.post('/auth/verify-email', { token }),
+  verifyEmail: (token) => apiClient.get('/auth/verify-email', { params: { token } }),
+  resendVerification: (email) => apiClient.post('/auth/resend-verification', { email }),
   // Use raw axios for refresh — must NOT include the Authorization header
   // (which would carry a stale/expired access token). Refresh is auth'd by cookie only.
   refresh: () => axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true }),

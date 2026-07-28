@@ -119,7 +119,10 @@ export const loginUser = async ({ email, password, ipAddress, userAgent, remembe
   }
 
   if (!user.isEmailVerified) {
-    throw new UnauthorizedError('Email address not verified');
+    throw new UnauthorizedError('Please verify your email before logging in.', {
+      requiresVerification: true,
+      email: user.email
+    });
   }
 
   const isMatch = await user.comparePassword(password);

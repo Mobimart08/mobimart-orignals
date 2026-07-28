@@ -17,6 +17,8 @@ const AuthModal = () => {
   });
   const [loading, setLoading] = useState(false);
   const [forgotSuccess, setForgotSuccess] = useState(false);
+  const [requiresVerification, setRequiresVerification] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
 
   if (!authModalOpen) return null;
 
@@ -40,13 +42,31 @@ const AuthModal = () => {
       }
     } catch (err) {
       const data = err.response?.data;
-      if (data?.errors && data.errors.length > 0) {
+      if (data?.data?.requiresVerification) {
+        setRequiresVerification(true);
+        setUnverifiedEmail(data.data.email);
+        showToast(data.message, 'error');
+      } else if (data?.errors && data.errors.length > 0) {
         // Show the first validation error message instead of generic 'Input validation failed'
         showToast(data.errors[0].message, 'error');
       } else {
         const errorMessage = data?.message || (err.message === 'Network Error' ? 'Network Error: Cannot connect to server' : 'Authentication failed');
         showToast(errorMessage, 'error');
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setLoading(true);
+    try {
+      const { authService } = await import('../../api/services');
+      await authService.resendVerification(unverifiedEmail);
+      showToast('Verification email sent! Please check your inbox.', 'success');
+      setRequiresVerification(false);
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to resend verification email', 'error');
     } finally {
       setLoading(false);
     }
@@ -90,6 +110,7 @@ const AuthModal = () => {
                 onClick={() => {
                   setView('login');
                   setForgotSuccess(false);
+                  setRequiresVerification(false);
                 }}
                 className="text-sm font-bold text-black hover:underline"
               >
@@ -198,12 +219,27 @@ const AuthModal = () => {
                   disabled={loading}
                   className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-900 transition-colors flex items-center justify-center mt-2"
                 >
-                  {loading ? (
+                  {loading && !requiresVerification ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     view === 'login' ? 'Sign In' : view === 'register' ? 'Sign Up' : 'Send Reset Link'
                   )}
                 </button>
+
+                {requiresVerification && view === 'login' && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={loading}
+                    className="w-full bg-white text-black border border-black py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center mt-2"
+                  >
+                    {loading ? (
+                      <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                    ) : (
+                      'Resend Verification Email'
+                    )}
+                  </button>
+                )}
               </form>
 
               <div className="mt-6 text-center">
@@ -212,6 +248,7 @@ const AuthModal = () => {
                   onClick={() => {
                     setView(view === 'login' ? 'register' : 'login');
                     setForgotSuccess(false);
+                    setRequiresVerification(false);
                   }}
                   className="text-sm text-gray-600 hover:text-black hover:underline"
                 >

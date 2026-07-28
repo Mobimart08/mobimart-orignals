@@ -50,7 +50,7 @@ router.post('/logout', originValidationMiddleware, logout);
 router.post('/refresh', originValidationMiddleware, refresh);
 router.post('/forgot-password', originValidationMiddleware, forgotPasswordLimiter, forgotPasswordValidator, forgotPassword);
 router.post('/reset-password', originValidationMiddleware, resetPasswordValidator, resetPassword);
-router.get('/verify-email/:token', verifyEmail); // Note: GET from email client won't have origin
+router.get('/verify-email', verifyEmail);
 router.post('/resend-verification', originValidationMiddleware, forgotPasswordLimiter, resendVerification);
 
 router.get('/me', authMiddleware, getMe);

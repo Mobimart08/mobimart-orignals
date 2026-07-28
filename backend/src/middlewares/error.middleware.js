@@ -27,6 +27,7 @@ const errorMiddleware = (err, req, res, next) => {
       success: false,
       statusCode: err.statusCode,
       message: err.message,
+      data: err.data,
       errors: err.errors?.length ? err.errors : undefined,
       // Include stack trace only in development
       ...(env.IS_DEVELOPMENT && { stack: err.stack }),

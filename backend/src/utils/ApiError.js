@@ -52,8 +52,9 @@ export class BadRequestError extends ApiError {
 }
 
 export class UnauthorizedError extends ApiError {
-  constructor(message = 'Authentication required') {
+  constructor(message = 'Authentication required', data = null) {
     super(401, message);
+    if (data) this.data = data;
   }
 }
 

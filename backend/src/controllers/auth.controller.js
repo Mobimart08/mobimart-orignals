@@ -144,16 +144,15 @@ export const resetPassword = asyncHandler(async (req, res) => {
 });
 
 export const verifyEmail = asyncHandler(async (req, res) => {
-  const { token } = req.params;
+  const { token } = req.query;
 
-  try {
-    await verifyUserEmail(token);
-    // Redirect to frontend login with success query parameter
-    res.redirect(`${env.FRONTEND_URL}/login?verified=true`);
-  } catch (error) {
-    // Redirect to frontend login with error query parameter
-    res.redirect(`${env.FRONTEND_URL}/login?verified=false&error=${encodeURIComponent(error.message)}`);
-  }
+  await verifyUserEmail(token);
+
+  ApiResponse.success(
+    res,
+    HTTP_STATUS.OK,
+    'Email verified successfully'
+  );
 });
 
 export const resendVerification = asyncHandler(async (req, res) => {
