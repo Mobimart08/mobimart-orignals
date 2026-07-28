@@ -42,18 +42,18 @@ export const FeatureBar = ({ onCertifiedClick, onWarrantyClick, onShippingClick 
               {/* Feature Item */}
               <div 
                 onClick={feat.onClick}
-                className="flex items-center gap-1.5 sm:gap-3 flex-1 justify-center cursor-pointer group hover:opacity-85 transition-opacity"
+                className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-3 flex-1 justify-center cursor-pointer group hover:opacity-85 transition-opacity text-center sm:text-left"
               >
                 {/* Icon Capsule */}
                 <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-gold-bg border border-[#EBDCD0]/50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   {feat.icon}
                 </div>
                 {/* Text Group */}
-                <div className="flex flex-col text-left min-w-0">
-                  <h4 className="text-[8px] sm:text-xs md:text-sm font-extrabold text-neutral-950 tracking-tight leading-tight truncate group-hover:text-gold-accent transition-colors">
+                <div className="flex flex-col min-w-0 px-0.5">
+                  <h4 className="text-[9px] sm:text-xs md:text-sm font-extrabold text-neutral-950 tracking-tight leading-tight group-hover:text-gold-accent transition-colors">
                     {feat.title}
                   </h4>
-                  <p className="text-[6.5px] sm:text-[10px] text-gray-500 font-medium leading-none mt-0.5 truncate">
+                  <p className="text-[7px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5 sm:mt-0.5">
                     {feat.subtext}
                   </p>
                 </div>

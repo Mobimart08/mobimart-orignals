@@ -91,7 +91,7 @@ export const Collections = () => {
                 <img 
                   src={collectionAndroid} 
                   alt="Flagship Android" 
-                  className="max-w-full max-h-full object-contain md:object-right select-none pointer-events-none transition-all duration-300 scale-[2.0] md:scale-100 opacity-95 group-hover:opacity-100 origin-right"
+                  className="w-full h-full object-contain object-right md:object-right select-none pointer-events-none transition-all duration-300 scale-90 md:scale-100 opacity-95 group-hover:opacity-100 origin-right"
                 />
               </div>
             </Card>
