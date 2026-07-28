@@ -28,7 +28,14 @@ const resend = new Resend(env.RESEND_API_KEY);
 export const sendMail = async (to, subject, html) => {
   console.log(`\n================= EMAIL DISPATCH LOG =================`);
   console.log(`To: ${to}`);
-  console.log(`From: ${env.EMAIL_FROM}`);
+  // Clean up badly formatted EMAIL_FROM environment variables.
+  // If it's `<email@domain.com>`, strip the angle brackets so Resend accepts it.
+  let fromAddress = env.EMAIL_FROM.trim();
+  if (fromAddress.startsWith('<') && fromAddress.endsWith('>')) {
+    fromAddress = fromAddress.slice(1, -1);
+  }
+
+  console.log(`From: ${fromAddress}`);
   console.log(`Subject: ${subject}`);
   // Extracting URL from HTML if present (rudimentary regex for logging)
   const urlMatch = html.match(/href="([^"]+)"/);
@@ -38,7 +45,7 @@ export const sendMail = async (to, subject, html) => {
 
   try {
     const response = await resend.emails.send({
-      from: env.EMAIL_FROM,
+      from: fromAddress,
       to,
       subject,
       html,
