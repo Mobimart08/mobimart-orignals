@@ -87,6 +87,14 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
         throw new ApiError(400, `Insufficient stock for ${product.name}`);
       }
 
+      console.log('\n==========================================');
+      console.log('STOCK UPDATE');
+      console.log('==========================================');
+      console.log(`Product ID: ${product._id}`);
+      console.log(`Previous Stock: ${product.stock}`);
+      console.log(`Updated Stock: ${updatedProduct.stock}`);
+      console.log('==========================================\n');
+
       decrementedItems.push({ productId: product._id, quantity: cartItem.quantity });
 
       // Snapshot item price (flat schema has flat price)
@@ -156,8 +164,14 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
     await order.save();
 
     // 6. Clear user cart
+    console.log('\n==========================================');
+    console.log('CART');
+    console.log('==========================================');
+    console.log('Clearing cart...');
     cart.items = [];
     await cart.save();
+    console.log('Cart cleared successfully.');
+    console.log('==========================================\n');
 
     // 7. Send Notification
     await createNotification({

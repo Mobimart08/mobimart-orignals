@@ -59,6 +59,11 @@ export const createPaymentIntent = async (orderId, userId) => {
   try {
     const razorpayOrder = await razorpay.orders.create(options);
     
+    console.log(`Order ID: ${razorpayOrder.id}`);
+    console.log(`Amount: ${razorpayOrder.amount}`);
+    console.log(`Currency: ${razorpayOrder.currency}`);
+    console.log(`Status: ${razorpayOrder.status}`);
+    console.log('==========================================\n');
     // Update order with the intent reference
     order.razorpayOrderId = razorpayOrder.id;
     await order.save();
@@ -71,6 +76,15 @@ export const createPaymentIntent = async (orderId, userId) => {
       key: env.RAZORPAY_KEY_ID,
     };
   } catch (error) {
+    console.log('\n==========================================');
+    console.log('PAYMENT FAILED');
+    console.log('==========================================');
+    console.log(`Status Code: ${error.statusCode || 'N/A'}`);
+    console.log(`Reason: ${error.error?.reason || error.message}`);
+    console.log(`Description: ${error.error?.description || 'N/A'}`);
+    console.log(`Metadata:`, JSON.stringify(error.error?.metadata || {}, null, 2));
+    console.log('==========================================\n');
+
     throw new ApiError(500, `Failed to create Razorpay order: ${error.message}`);
   }
 };
@@ -128,14 +142,47 @@ export const verifyPayment = async (orderId, razorpayOrderId, razorpayPaymentId,
   const expectedBuffer = Buffer.from(expectedSignature, 'utf-8');
   const signatureBuffer = Buffer.from(razorpaySignature, 'utf-8');
 
+  console.log('\n==========================================');
+  console.log('SIGNATURE VERIFICATION');
+  console.log('==========================================');
+  console.log(`Expected Signature: ${expectedSignature}`);
+  console.log(`Received Signature: ${razorpaySignature}`);
+
   const isAuthentic = expectedBuffer.length === signatureBuffer.length && 
     crypto.timingSafeEqual(expectedBuffer, signatureBuffer);
 
   if (!isAuthentic) {
+    console.log('Verification Result: ❌ Invalid Signature');
+    console.log('==========================================\n');
     order.paymentStatus = PAYMENT_STATUS.FAILED;
     await order.save();
+    
+    console.log('\n==========================================');
+    console.log('PAYMENT FAILED');
+    console.log('==========================================');
+    console.log('Status Code: 400');
+    console.log('Reason: Invalid payment signature');
+    console.log('Description: Signature verification failed during verifyPayment');
+    console.log('Metadata: {}');
+    console.log('==========================================\n');
+    
     throw new ApiError(400, 'Invalid payment signature');
   }
+  
+  console.log('Verification Result: ✅ Signature Verified');
+  console.log('==========================================\n');
+
+  console.log('\n==========================================');
+  console.log('SAVE ORDER');
+  console.log('==========================================');
+  console.log('Creating database order...');
+  console.log(`Order ID: ${order.orderId}`);
+  console.log(`Payment ID: ${razorpayPaymentId}`);
+  console.log(`User ID: ${order.userId}`);
+  console.log(`Total: ${order.pricing.total}`);
+  console.log(`Items: ${order.items.length}`);
+  console.log('✅ Order Saved Successfully');
+  console.log('==========================================\n');
 
   order.paymentStatus = PAYMENT_STATUS.PAID;
   order.orderStatus = ORDER_STATUS.PROCESSING;

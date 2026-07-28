@@ -31,15 +31,15 @@ const ResetPasswordPage = () => {
       setErrorMessage('Passwords do not match.');
       return;
     }
-    if (password.length < 6) {
+    if (password.length < 8) {
       setStatus('error');
-      setErrorMessage('Password must be at least 6 characters long.');
+      setErrorMessage('Password must be at least 8 characters long.');
       return;
     }
 
     setStatus('loading');
     try {
-      await authService.resetPassword({ token, newPassword: password });
+      await authService.resetPassword({ token, newPassword: password, confirmPassword });
       setStatus('success');
     } catch (err) {
       setStatus('error');
