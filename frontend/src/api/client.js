@@ -52,6 +52,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     if (config.url && config.url.includes('/auth/refresh')) {
+      console.log(`[Auth Debug] 📤 Sending request to ${config.url} (Refresh Endpoint). withCredentials:`, config.withCredentials);
       return config;
     }
     const token = getAccessToken();
@@ -77,10 +78,13 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       if (!isRefreshing) {
+        console.log('[Auth Debug] 🔄 Initiating silent token refresh...');
         isRefreshing = true;
 
         try {
           const refreshResponse = await requestRefreshToken();
+          console.log('[Auth Debug] ✅ Refresh SUCCESS. Status:', refreshResponse.status);
+          
           const newAccessToken = refreshResponse.data.data.accessToken;
           setAccessToken(newAccessToken);
           isRefreshing = false;
@@ -89,8 +93,12 @@ apiClient.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return apiClient(originalRequest);
         } catch (refreshError) {
+          console.log('[Auth Debug] ⚠️ First refresh attempt failed:', refreshError.message);
           try {
+            console.log('[Auth Debug] 🔄 Attempting recovery refresh...');
             const recoveryResponse = await requestRefreshToken();
+            console.log('[Auth Debug] ✅ Recovery refresh SUCCESS.');
+            
             const recoveredAccessToken = recoveryResponse.data.data.accessToken;
             setAccessToken(recoveredAccessToken);
             isRefreshing = false;
@@ -99,6 +107,8 @@ apiClient.interceptors.response.use(
             originalRequest.headers.Authorization = `Bearer ${recoveredAccessToken}`;
             return apiClient(originalRequest);
           } catch (recoveryError) {
+            console.error('[Auth Debug] ❌ All refresh attempts failed. Logging user out.');
+            console.error('[Auth Debug] Reason:', recoveryError.response?.data || recoveryError.message);
             isRefreshing = false;
             setAccessToken(null);
             notifySubscribers(recoveryError, null);
@@ -108,6 +118,8 @@ apiClient.interceptors.response.use(
             return Promise.reject(recoveryError);
           }
         }
+      } else {
+        console.log('[Auth Debug] ⏳ Refresh already in progress. Queuing request...');
       }
 
       return new Promise((resolve, reject) => {

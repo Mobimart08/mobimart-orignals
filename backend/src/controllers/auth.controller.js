@@ -100,21 +100,40 @@ export const logout = asyncHandler(async (req, res) => {
 });
 
 export const refresh = asyncHandler(async (req, res) => {
+  console.log('\n==========================================');
+  console.log('REFRESH ENDPOINT HIT');
+  console.log('==========================================');
+  console.log('Request Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('Cookies Object:', JSON.stringify(req.cookies, null, 2));
+  console.log('==========================================\n');
+
   const { refreshToken: oldRefreshToken } = req.cookies;
+  
+  if (!oldRefreshToken) {
+    console.log('❌ No refresh token found in cookies!');
+  }
+
   const { ipAddress, userAgent } = getClientMeta(req);
 
-  const result = await refreshSession(oldRefreshToken, ipAddress, userAgent);
+  try {
+    const result = await refreshSession(oldRefreshToken, ipAddress, userAgent);
 
-  setRefreshTokenCookie(res, result.refreshToken);
+    setRefreshTokenCookie(res, result.refreshToken);
 
-  ApiResponse.success(
-    res,
-    HTTP_STATUS.OK,
-    'Session refreshed successfully',
-    {
-      accessToken: result.accessToken,
-    }
-  );
+    console.log('✅ Refresh successful. New access token generated.');
+    
+    ApiResponse.success(
+      res,
+      HTTP_STATUS.OK,
+      'Session refreshed successfully',
+      {
+        accessToken: result.accessToken,
+      }
+    );
+  } catch (error) {
+    console.log(`❌ Refresh failed: ${error.message}`);
+    throw error;
+  }
 });
 
 export const forgotPassword = asyncHandler(async (req, res) => {
