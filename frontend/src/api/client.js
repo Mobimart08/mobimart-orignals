@@ -1,9 +1,13 @@
 import axios from 'axios';
 
 const staticApiUrl = import.meta.env.VITE_API_URL;
-const API_URL = import.meta.env.PROD 
+let API_URL = import.meta.env.PROD 
   ? (staticApiUrl || '') 
   : (staticApiUrl || `http://${window.location.hostname}:5000/api/v1`);
+
+if (API_URL && !API_URL.includes('/api/v1')) {
+  API_URL = API_URL.replace(/\/$/, '') + '/api/v1';
+}
 
 let inMemoryAccessToken = null;
 

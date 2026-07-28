@@ -1,9 +1,13 @@
 import apiClient from './client';
 import axios from 'axios';
 
-const API_URL = import.meta.env.PROD 
+let API_URL = import.meta.env.PROD 
   ? (import.meta.env.VITE_API_URL || '') 
   : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1');
+
+if (API_URL && !API_URL.includes('/api/v1')) {
+  API_URL = API_URL.replace(/\/$/, '') + '/api/v1';
+}
 
 export const authService = {
   login: (credentials) => apiClient.post('/auth/login', credentials),
