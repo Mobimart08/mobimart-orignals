@@ -84,7 +84,7 @@ const env = {
 
   // Email
   RESEND_API_KEY: process.env.RESEND_API_KEY,
-  EMAIL_FROM: process.env.EMAIL_FROM || 'MobiMart <test8538438@gmail.com>',
+  EMAIL_FROM: process.env.EMAIL_FROM || 'MobiMart <noreply@mobimartoriginals.com>',
 
   // CORS
   FRONTEND_URL: process.env.FRONTEND_URL,

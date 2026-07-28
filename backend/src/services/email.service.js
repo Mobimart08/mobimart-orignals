@@ -6,6 +6,7 @@
 
 import { Resend } from 'resend';
 import env from '../config/env.js';
+import ApiError from '../utils/ApiError.js';
 import {
   emailVerificationTemplate,
   welcomeTemplate,
@@ -25,26 +26,37 @@ const resend = new Resend(env.RESEND_API_KEY);
  * @param {string} html    - HTML content of the email
  */
 export const sendMail = async (to, subject, html) => {
+  console.log(`\n================= EMAIL DISPATCH LOG =================`);
+  console.log(`To: ${to}`);
+  console.log(`From: ${env.EMAIL_FROM}`);
+  console.log(`Subject: ${subject}`);
+  // Extracting URL from HTML if present (rudimentary regex for logging)
+  const urlMatch = html.match(/href="([^"]+)"/);
+  if (urlMatch) {
+    console.log(`Action URL: ${urlMatch[1]}`);
+  }
+
   try {
-    const { data, error } = await resend.emails.send({
+    const response = await resend.emails.send({
       from: env.EMAIL_FROM,
       to,
       subject,
       html,
     });
     
-    if (error) {
-      console.error('❌ Email dispatch failed:', error.message);
-      return null;
+    if (response.error) {
+      console.error('❌ Resend API Error:', JSON.stringify(response.error, null, 2));
+      throw new ApiError(500, `Email dispatch failed: ${response.error.message}`);
     }
 
-    console.log(`✉️  Email sent: ${data.id} to ${to}`);
-    return data;
+    console.log(`✅ Full Resend Response:`, JSON.stringify(response.data, null, 2));
+    console.log(`======================================================\n`);
+    return response.data;
   } catch (error) {
-    console.error('❌ Email dispatch failed:', error.message);
-    // Do not throw the error to prevent blocking request cycles
-    // in case of third-party email provider failures.
-    return null;
+    console.error('❌ Unexpected Email Exception:', error);
+    console.log(`======================================================\n`);
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, `Email dispatch failed: ${error.message}`);
   }
 };
 

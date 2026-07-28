@@ -71,9 +71,7 @@ export const registerUser = async ({ name, email, password, phone, ipAddress, us
     emailVerificationExpires: expiry,
   });
 
-  sendVerificationEmail(user.email, user.name, rawVerificationToken).catch(err => {
-    logger.error('Failed to send verification email:', err);
-  });
+  await sendVerificationEmail(user.email, user.name, rawVerificationToken);
 
   const rememberMe = false;
   const accessToken = signAccessToken(user._id, user.role);
@@ -269,9 +267,7 @@ export const requestForgotPassword = async (email) => {
     expiresAt: expiry,
   });
 
-  sendForgotPasswordEmail(user.email, user.name, rawResetToken).catch(err => {
-    logger.error('Failed to send forgot password email:', err);
-  });
+  await sendForgotPasswordEmail(user.email, user.name, rawResetToken);
 };
 
 /**
@@ -297,9 +293,7 @@ export const resetUserPassword = async (rawToken, newPassword) => {
   await Token.deleteMany({ userId: user._id });
   await clearUserAuthState(user._id);
 
-  sendPasswordChangedEmail(user.email, user.name).catch(err => {
-    logger.error('Failed to send password changed email:', err);
-  });
+  await sendPasswordChangedEmail(user.email, user.name);
 };
 
 /**
@@ -324,9 +318,7 @@ export const verifyUserEmail = async (rawToken) => {
   await user.save();
   await clearUserAuthState(user._id);
 
-  sendWelcomeEmail(user.email, user.name).catch(err => {
-    logger.error('Failed to send welcome email:', err);
-  });
+  await sendWelcomeEmail(user.email, user.name);
 };
 
 /**
@@ -352,7 +344,5 @@ export const resendVerificationEmail = async (email) => {
   user.emailVerificationExpires = expiry;
   await user.save();
 
-  sendVerificationEmail(user.email, user.name, rawVerificationToken).catch(err => {
-    logger.error('Failed to resend verification email:', err);
-  });
+  await sendVerificationEmail(user.email, user.name, rawVerificationToken);
 };

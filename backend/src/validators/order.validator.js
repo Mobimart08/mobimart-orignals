@@ -25,6 +25,6 @@ export const createOrderValidator = [
 
 export const updateOrderStatusValidator = [
   body('status')
-    .isIn(['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'])
+    .isIn(['Pending', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Returned', 'Refunded'])
     .withMessage('Invalid order status'),
 ];

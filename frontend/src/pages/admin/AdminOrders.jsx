@@ -144,9 +144,12 @@ const AdminOrders = () => {
                 <select required className="w-full border rounded-lg p-2 text-sm" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
                   <option value="Pending">Pending</option>
                   <option value="Processing">Processing</option>
+                  <option value="Packed">Packed</option>
                   <option value="Shipped">Shipped</option>
+                  <option value="Out for Delivery">Out for Delivery</option>
                   <option value="Delivered">Delivered</option>
                   <option value="Returned">Returned</option>
+                  <option value="Refunded">Refunded</option>
                   <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
