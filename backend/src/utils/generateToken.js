@@ -55,12 +55,11 @@ export const verifyAccessToken = (token) => {
  * @param {boolean} rememberMe - Whether to issue a long-lived (30d) token
  * @returns {string} - Signed JWT
  */
-export const signRefreshToken = (userId, rememberMe = false) => {
-  const expiresIn = rememberMe ? '30d' : (env.JWT_REFRESH_EXPIRES_IN || '7d');
+export const signRefreshToken = (userId) => {
   return jwt.sign(
-    { userId, rememberMe },
+    { userId },
     env.JWT_REFRESH_SECRET,
-    { expiresIn }
+    { expiresIn: '7d' }
   );
 };
 
@@ -106,10 +105,8 @@ export const generateRandomToken = (bytes = 32) => {
  * @param {boolean} rememberMe
  * @returns {Date}
  */
-export const getRefreshTokenExpiry = (rememberMe = false) => {
-  const ms = rememberMe
-    ? 30 * 24 * 60 * 60 * 1000  // 30 days
-    : 7 * 24 * 60 * 60 * 1000;  // 7 days (default)
+export const getRefreshTokenExpiry = () => {
+  const ms = 7 * 24 * 60 * 60 * 1000;  // 7 days
   return new Date(Date.now() + ms);
 };
 
@@ -121,31 +118,14 @@ export const getRefreshTokenExpiry = (rememberMe = false) => {
  * @param {string} refreshToken - The raw refresh token JWT
  */
 export const setRefreshTokenCookie = (res, refreshToken) => {
-  let rememberMe = false;
-
-  try {
-    const decoded = jwt.decode(refreshToken);
-    if (decoded && typeof decoded.rememberMe === 'boolean') {
-      rememberMe = decoded.rememberMe;
-    }
-  } catch (e) {
-    // Ignore decode error — fall back to session cookie
-  }
-
   const cookieOptions = {
     httpOnly: true,                                         // Not accessible via JS — XSS protection
     secure: env.IS_PRODUCTION,                              // HTTPS only in production
-    sameSite: env.IS_PRODUCTION ? 'none' : 'lax',           // 'none' required for cross-domain (Vercel -> Render)
+    sameSite: env.IS_PRODUCTION ? 'none' : 'lax',           // 'none' required for cross-domain
     path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000,                        // Persistent cookie — survives browser restart (7 days)
     ...(env.IS_PRODUCTION && env.COOKIE_DOMAIN && { domain: env.COOKIE_DOMAIN }), // Support cross-subdomain if custom domains are used
   };
-
-  if (rememberMe) {
-    // Persistent cookie — survives browser restart
-    cookieOptions.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days in ms
-  }
-  // When rememberMe=false, omitting maxAge makes it a session cookie
-  // (deleted when browser is closed)
 
   res.cookie('refreshToken', refreshToken, cookieOptions);
 };

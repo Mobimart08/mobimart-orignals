@@ -12,17 +12,20 @@ export const AuthProvider = ({ children }) => {
   const channelRef = useRef(null);
 
   const restoreSession = useCallback(async () => {
-    // We no longer manually call authService.refresh() here.
-    // By relying purely on apiClient, we leverage its built-in Token Refresh Rotation lock (isRefreshing).
-    // This prevents race conditions where React Strict Mode double-mounts or other Contexts 
-    // fire API calls simultaneously, avoiding "Session has expired" token reuse errors.
-    const profileResponse = await userService.getProfile({ silent: true });
-    
-    // If the request succeeds, it means either:
-    // 1. We had a valid access token in memory.
-    // 2. The interceptor successfully used our HttpOnly refresh cookie to get a new access token.
-    setUser(profileResponse.data.data);
-    return profileResponse.data.data;
+    // 1. Explicitly request a refresh token on startup to securely load the session
+    // from the HttpOnly 7-day persistent cookie.
+    try {
+      const refreshResponse = await authService.refresh();
+      const newAccessToken = refreshResponse.data.data.accessToken;
+      setAccessToken(newAccessToken);
+
+      // 2. Fetch the user profile with the securely loaded access token.
+      const profileResponse = await userService.getProfile({ silent: true });
+      setUser(profileResponse.data.data);
+      return profileResponse.data.data;
+    } catch (error) {
+      throw error;
+    }
   }, []);
 
   const broadcastAuthEvent = useCallback((type) => {

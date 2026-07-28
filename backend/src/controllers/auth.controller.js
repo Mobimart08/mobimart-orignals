@@ -63,7 +63,7 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, password, rememberMe } = req.body;
+  const { email, password } = req.body;
   const { ipAddress, userAgent } = getClientMeta(req);
 
   const result = await loginUser({
@@ -71,7 +71,6 @@ export const login = asyncHandler(async (req, res) => {
     password,
     ipAddress,
     userAgent,
-    rememberMe,
   });
 
   setRefreshTokenCookie(res, result.refreshToken);

@@ -73,16 +73,15 @@ export const registerUser = async ({ name, email, password, phone, ipAddress, us
 
   await sendVerificationEmail(user.email, user.name, rawVerificationToken);
 
-  const rememberMe = false;
   const accessToken = signAccessToken(user._id, user.role);
-  const refreshToken = signRefreshToken(user._id, rememberMe);
+  const refreshToken = signRefreshToken(user._id);
 
   const hashedRefreshToken = hashToken(refreshToken);
   await Token.create({
     userId: user._id,
     tokenHash: hashedRefreshToken,
     type: 'refresh',
-    expiresAt: getRefreshTokenExpiry(rememberMe),
+    expiresAt: getRefreshTokenExpiry(),
     userAgent,
     ipAddress,
   });
@@ -98,7 +97,7 @@ export const registerUser = async ({ name, email, password, phone, ipAddress, us
  * Authenticates user, verifies password, generates new session tokens,
  * rotates refresh tokens, updates lastLogin, and returns profile.
  */
-export const loginUser = async ({ email, password, ipAddress, userAgent, rememberMe = false }) => {
+export const loginUser = async ({ email, password, ipAddress, userAgent }) => {
   const user = await User.findOne({ email }).select('+passwordHash');
   if (!user) {
     throw new UnauthorizedError('Invalid email or password');
@@ -146,7 +145,7 @@ export const loginUser = async ({ email, password, ipAddress, userAgent, remembe
   await clearUserAuthState(user._id);
 
   const accessToken = signAccessToken(user._id, user.role);
-  const refreshToken = signRefreshToken(user._id, rememberMe);
+  const refreshToken = signRefreshToken(user._id);
 
   const userTokens = await Token.find({ userId: user._id, type: 'refresh' }).sort({ createdAt: 1 });
   if (userTokens.length >= 5) {
@@ -159,7 +158,7 @@ export const loginUser = async ({ email, password, ipAddress, userAgent, remembe
     userId: user._id,
     tokenHash: hashedRefreshToken,
     type: 'refresh',
-    expiresAt: getRefreshTokenExpiry(rememberMe),
+    expiresAt: getRefreshTokenExpiry(),
     userAgent,
     ipAddress,
   });
@@ -218,9 +217,8 @@ export const refreshSession = async (oldRefreshToken, ipAddress, userAgent) => {
     throw new UnauthorizedError('Session no longer valid');
   }
 
-  const rememberMe = decoded.rememberMe === true;
-  const accessToken = signAccessToken(user._id, user.role);
-  const newRefreshToken = signRefreshToken(user._id, rememberMe);
+  const newAccessToken = signAccessToken(user._id, user.role);
+  const newRefreshToken = signRefreshToken(user._id);
 
   const userTokens = await Token.find({ userId: user._id, type: 'refresh' }).sort({ createdAt: 1 });
   if (userTokens.length >= 5) {
@@ -233,13 +231,13 @@ export const refreshSession = async (oldRefreshToken, ipAddress, userAgent) => {
     userId: user._id,
     tokenHash: hashedNewToken,
     type: 'refresh',
-    expiresAt: getRefreshTokenExpiry(rememberMe),
+    expiresAt: getRefreshTokenExpiry(),
     userAgent,
     ipAddress,
   });
 
   return {
-    accessToken,
+    accessToken: newAccessToken,
     refreshToken: newRefreshToken,
   };
 };
