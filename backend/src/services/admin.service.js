@@ -79,7 +79,6 @@ export const getAllOrders = async (query = {}) => {
   if (status) filter.orderStatus = status;
 
   const orders = await Order.find(filter)
-    .populate('userId', 'name email')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(Number(limit));

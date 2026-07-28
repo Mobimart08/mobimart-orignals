@@ -134,9 +134,10 @@ export const setRefreshTokenCookie = (res, refreshToken) => {
 
   const cookieOptions = {
     httpOnly: true,                                         // Not accessible via JS — XSS protection
-    secure: env.IS_PRODUCTION,                             // HTTPS only in production
-    sameSite: env.IS_PRODUCTION ? 'strict' : 'lax',        // CSRF protection in prod
+    secure: env.IS_PRODUCTION,                              // HTTPS only in production
+    sameSite: env.IS_PRODUCTION ? 'none' : 'lax',           // 'none' required for cross-domain (Vercel -> Render)
     path: '/',
+    ...(env.IS_PRODUCTION && env.COOKIE_DOMAIN && { domain: env.COOKIE_DOMAIN }), // Support cross-subdomain if custom domains are used
   };
 
   if (rememberMe) {
@@ -159,8 +160,9 @@ export const clearRefreshTokenCookie = (res) => {
   res.cookie('refreshToken', '', {
     httpOnly: true,
     secure: env.IS_PRODUCTION,
-    sameSite: env.IS_PRODUCTION ? 'strict' : 'lax',
+    sameSite: env.IS_PRODUCTION ? 'none' : 'lax',
     maxAge: 0,  // Expires immediately
     path: '/',
+    ...(env.IS_PRODUCTION && env.COOKIE_DOMAIN && { domain: env.COOKIE_DOMAIN }),
   });
 };

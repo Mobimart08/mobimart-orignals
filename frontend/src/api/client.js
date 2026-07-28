@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const staticApiUrl = import.meta.env.VITE_API_URL;
-const API_URL = (staticApiUrl && !staticApiUrl.includes('localhost') && !staticApiUrl.includes('127.0.0.1'))
-  ? staticApiUrl 
-  : `http://${window.location.hostname}:5000/api/v1`;
+const API_URL = import.meta.env.PROD 
+  ? (staticApiUrl || '') 
+  : (staticApiUrl || `http://${window.location.hostname}:5000/api/v1`);
 
 let inMemoryAccessToken = null;
 

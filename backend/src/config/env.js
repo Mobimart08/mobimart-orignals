@@ -26,7 +26,7 @@ const REQUIRED_VARS = [
   'RESEND_API_KEY',
 ];
 
-// In production, enforce Cloudinary and Razorpay variables as well
+// In production, enforce Cloudinary, Razorpay, and explicit URLs
 if (process.env.NODE_ENV === 'production') {
   REQUIRED_VARS.push(
     'CLOUDINARY_CLOUD_NAME',
@@ -34,7 +34,9 @@ if (process.env.NODE_ENV === 'production') {
     'CLOUDINARY_API_SECRET',
     'RAZORPAY_KEY_ID',
     'RAZORPAY_KEY_SECRET',
-    'RAZORPAY_WEBHOOK_SECRET'
+    'RAZORPAY_WEBHOOK_SECRET',
+    'APP_URL',
+    'COOKIE_DOMAIN'
   );
 }
 

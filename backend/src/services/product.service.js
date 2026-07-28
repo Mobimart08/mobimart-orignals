@@ -172,6 +172,7 @@ const buildPublicProductQuery = async (queryParams) => {
     mongoQuery.stock = { $gt: 0 };
   }
 
+  console.log('DEBUG_MONGO_QUERY:', JSON.stringify(mongoQuery));
   return mongoQuery;
 };
 
@@ -393,7 +394,6 @@ export const queryProducts = async (queryParams) => {
         .sort(mongoSort)
         .skip(skip)
         .limit(parsedLimit)
-        .populate('brand category')
         .lean(),
     ]);
 
@@ -416,7 +416,6 @@ export const queryProducts = async (queryParams) => {
   const data = await Product.find(mongoQuery)
     .sort(mongoSort)
     .limit(parsedLimit + 1)
-    .populate('brand category')
     .lean();
 
   const hasMore = data.length > parsedLimit;
@@ -456,7 +455,6 @@ export const queryAdminProducts = async (queryParams) => {
       .sort(mongoSort)
       .skip(skip)
       .limit(parsedLimit)
-      .populate('brand category')
       .lean(),
   ]);
 

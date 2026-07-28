@@ -188,11 +188,18 @@ export const mergeGuestCart = async (userId, guestItems = []) => {
   const cart = await getOrCreateCart(userId);
   const skippedItems = [];
 
+  // Prevent N+1: Fetch all required products in a single query
+  const productIds = guestItems.map(item => item.productId);
+  const products = await Product.find({ _id: { $in: productIds }, isActive: true }).lean();
+  const productMap = products.reduce((acc, product) => {
+    acc[product._id.toString()] = product;
+    return acc;
+  }, {});
+
   for (const guestItem of guestItems) {
     const { productId, selectedStorage, selectedColor, quantity = 1 } = guestItem;
 
-    // Verify product exists and is active before merging
-    const product = await Product.findOne({ _id: productId, isActive: true });
+    const product = productMap[productId.toString()];
     if (!product || product.stock <= 0) {
       skippedItems.push(guestItem);
       continue;

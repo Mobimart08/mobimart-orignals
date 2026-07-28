@@ -204,6 +204,8 @@ productSchema.index({ isFeatured: 1, isActive: 1 });
 productSchema.index({ stock: 1, isActive: 1 });
 productSchema.index({ averageRating: -1, isActive: 1 });
 productSchema.index({ createdAt: -1 });
+productSchema.index({ isActive: 1, price: 1, _id: 1 });
+productSchema.index({ isActive: 1, createdAt: -1, _id: 1 });
 
 productSchema.index(
   {

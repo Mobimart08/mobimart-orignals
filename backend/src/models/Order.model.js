@@ -144,6 +144,7 @@ orderSchema.index({ userId: 1, createdAt: -1 });
 orderSchema.index({ orderStatus: 1, createdAt: -1 }); // Admin: filter by status + sort by date
 orderSchema.index({ paymentStatus: 1, createdAt: -1 }); // Admin: filter by payment status
 orderSchema.index({ createdAt: -1 }); // Admin: latest orders list
+orderSchema.index({ createdAt: 1, 'pricing.total': 1 }); // Admin: Revenue aggregation
 
 const Order = mongoose.model('Order', orderSchema);
 
