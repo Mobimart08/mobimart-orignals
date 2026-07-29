@@ -22,7 +22,7 @@ export const CompactOrderCard = ({ item }) => {
 
       {/* Details */}
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider leading-none">{product.brand}</span>
+        <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider leading-none">{product.brand?.name || product.brand}</span>
         <h4 className="text-xs font-extrabold text-neutral-950 truncate leading-tight">{product.name}</h4>
         <span className="text-[9.5px] font-semibold text-gray-400 uppercase tracking-wide">
           {selectedStorage} · {selectedColor} · Qty {quantity}
