@@ -5,21 +5,21 @@ import { setAccessToken, getAccessToken } from '../api/client';
 const AuthContext = createContext();
 const AUTH_BROADCAST_CHANNEL = 'mobimart-auth';
 
+let globalRestorePromise = null;
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const channelRef = useRef(null);
 
-  const restorePromiseRef = useRef(null);
-
   const restoreSession = useCallback(async () => {
-    // 1. Prevent React 18 Strict Mode double-invocation race conditions
-    if (restorePromiseRef.current) {
-      return restorePromiseRef.current;
+    // 1. Prevent React 18 Strict Mode double-invocation race conditions across mounts
+    if (globalRestorePromise) {
+      return globalRestorePromise;
     }
 
-    restorePromiseRef.current = (async () => {
+    globalRestorePromise = (async () => {
       try {
         // 2. Explicitly request a refresh token on startup BEFORE any other API calls
         const refreshResponse = await authService.refresh();
@@ -38,11 +38,11 @@ export const AuthProvider = ({ children }) => {
         throw error;
       } finally {
         // 6. Clear the lock
-        restorePromiseRef.current = null;
+        globalRestorePromise = null;
       }
     })();
 
-    return restorePromiseRef.current;
+    return globalRestorePromise;
   }, []);
 
   const broadcastAuthEvent = useCallback((type) => {
