@@ -35,8 +35,7 @@ if (process.env.NODE_ENV === 'production') {
     'RAZORPAY_KEY_ID',
     'RAZORPAY_KEY_SECRET',
     'RAZORPAY_WEBHOOK_SECRET',
-    'APP_URL',
-    'COOKIE_DOMAIN'
+    'APP_URL'
   );
 }
 
@@ -111,7 +110,6 @@ const env = {
   // App
   APP_NAME: process.env.APP_NAME || 'MobiMart',
   APP_URL: process.env.APP_URL || 'http://localhost:5000',
-  COOKIE_DOMAIN: process.env.COOKIE_DOMAIN || 'localhost',
 };
 
 export default env;

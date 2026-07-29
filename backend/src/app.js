@@ -25,6 +25,9 @@ import apiRouter from './routes/index.js';
 
 const app = express();
 
+// Trust the reverse proxy (e.g., Render, Heroku, Nginx) to ensure req.ip and req.secure work correctly
+app.set('trust proxy', 1);
+
 /* ==========================================================================
    SECTION 1 — Security Headers (Helmet)
    Must be first — sets HTTP headers before anything else.

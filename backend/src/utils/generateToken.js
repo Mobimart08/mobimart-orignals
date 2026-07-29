@@ -124,7 +124,6 @@ export const setRefreshTokenCookie = (res, refreshToken) => {
     sameSite: env.IS_PRODUCTION ? 'none' : 'lax',           // 'none' required for cross-domain
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000,                        // Persistent cookie — survives browser restart (7 days)
-    ...(env.IS_PRODUCTION && env.COOKIE_DOMAIN && { domain: env.COOKIE_DOMAIN }), // Support cross-subdomain if custom domains are used
   };
 
   res.cookie('refreshToken', refreshToken, cookieOptions);
@@ -143,6 +142,5 @@ export const clearRefreshTokenCookie = (res) => {
     sameSite: env.IS_PRODUCTION ? 'none' : 'lax',
     maxAge: 0,  // Expires immediately
     path: '/',
-    ...(env.IS_PRODUCTION && env.COOKIE_DOMAIN && { domain: env.COOKIE_DOMAIN }),
   });
 };
