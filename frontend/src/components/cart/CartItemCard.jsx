@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Trash2, Heart, Plus, Minus, ShieldCheck } from 'lucide-react';
 import { useWishlist } from '../../context/WishlistContext';
 
@@ -9,15 +9,15 @@ import { useWishlist } from '../../context/WishlistContext';
    - Mounts the animated QuantitySelector stepper
    ========================================================================== */
 
-export const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
+const CartItemCardComponent = ({ item, onUpdateQuantity, onRemove }) => {
   const { toggleWishlist, isWishlisted } = useWishlist();
   const { product, selectedStorage, selectedColor, quantity } = item;
 
-  const liked = isWishlisted(product.id);
+  const liked = isWishlisted(product.id || product._id);
 
   const handleMoveToWishlist = () => {
     toggleWishlist(product);
-    onRemove(product.id, selectedStorage, selectedColor);
+    onRemove(product.id || product._id, selectedStorage, selectedColor);
   };
 
   return (
@@ -26,7 +26,7 @@ export const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
       {/* 1. Left product thumbnail image */}
       <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#FAF9F6]/80 rounded-[14px] flex items-center justify-center shrink-0 p-2 overflow-hidden border border-gray-100 group-hover:bg-[#ECEFF2]/50 transition-colors">
         <img
-          src={product.image}
+          src={product.image || (product.images && product.images[0]?.url)}
           alt={product.name}
           className="h-full w-auto object-contain object-bottom mix-blend-multiply"
         />
@@ -78,7 +78,7 @@ export const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
           {/* Quantity Stepper selector */}
           <QuantitySelector 
             value={quantity}
-            onChange={(newVal) => onUpdateQuantity(product.id, selectedStorage, selectedColor, newVal)}
+            onChange={(newVal) => onUpdateQuantity(product.id || product._id, selectedStorage, selectedColor, newVal)}
           />
 
           {/* Quick operations */}
@@ -95,7 +95,7 @@ export const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
             {/* Trash Bin */}
             <button
               type="button"
-              onClick={() => onRemove(product.id, selectedStorage, selectedColor)}
+              onClick={() => onRemove(product.id || product._id, selectedStorage, selectedColor)}
               className="p-1.5 hover:bg-neutral-100 hover:text-red-500 rounded-full transition-all cursor-pointer"
               title="Remove Item"
             >
@@ -169,4 +169,15 @@ export const QuantitySelector = ({ value = 1, onChange }) => {
   );
 };
 
+// Custom comparison function for React.memo
+const areEqual = (prevProps, nextProps) => {
+  return (
+    prevProps.item.quantity === nextProps.item.quantity &&
+    prevProps.item.selectedStorage === nextProps.item.selectedStorage &&
+    prevProps.item.selectedColor === nextProps.item.selectedColor &&
+    (prevProps.item.product?._id === nextProps.item.product?._id || prevProps.item.product?.id === nextProps.item.product?.id)
+  );
+};
+
+export const CartItemCard = memo(CartItemCardComponent, areEqual);
 export default CartItemCard;

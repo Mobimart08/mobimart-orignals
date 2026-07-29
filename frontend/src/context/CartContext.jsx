@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { cartService } from '../api/services';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
@@ -12,15 +12,22 @@ export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  const calculateGuestTotals = useCallback((items) => {
+  // Use refs to keep stable callbacks for React.memo
+  const stateRef = useRef({ items: [], totals: { subtotal: 0, originalSubtotal: 0, totalItems: 0 } });
+  useEffect(() => {
+    stateRef.current = { items: cartItems, totals: cartTotals };
+  }, [cartItems, cartTotals]);
+
+  const calculateTotals = useCallback((items) => {
     let subtotal = 0;
     let originalSubtotal = 0;
     let totalItems = 0;
 
     items.forEach(item => {
       totalItems += item.quantity;
-      const price = item.product?.price || 0;
-      const mrp = item.product?.mrp || price;
+      const p = item.product || item.productId;
+      const price = p?.price || 0;
+      const mrp = p?.originalPrice || p?.mrp || price;
       subtotal += price * item.quantity;
       originalSubtotal += mrp * item.quantity;
     });
@@ -29,31 +36,34 @@ export const CartProvider = ({ children }) => {
     setCartTotals({ subtotal, originalSubtotal, totalItems });
   }, []);
 
+  const applyServerCart = useCallback((data) => {
+    setCartItems(data.items || []);
+    setCartTotals({
+      subtotal: data.subtotal || 0,
+      originalSubtotal: data.originalSubtotal || 0,
+      totalItems: data.totalItems || 0,
+    });
+  }, []);
+
   const getGuestCart = useCallback(() => JSON.parse(localStorage.getItem(GUEST_CART_KEY) || '[]'), []);
   
   const saveGuestCart = useCallback((items) => {
     localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
-    calculateGuestTotals(items);
-  }, [calculateGuestTotals]);
+    calculateTotals(items);
+  }, [calculateTotals]);
 
   const fetchCart = useCallback(async () => {
     if (!user) {
-      calculateGuestTotals(getGuestCart());
+      calculateTotals(getGuestCart());
       return;
     }
     try {
       const res = await cartService.getCart();
-      const data = res.data.data;
-      setCartItems(data.items || []);
-      setCartTotals({
-        subtotal: data.subtotal || 0,
-        originalSubtotal: data.originalSubtotal || 0,
-        totalItems: data.totalItems || 0,
-      });
+      applyServerCart(res.data.data);
     } catch (err) {
       console.error('Failed to fetch cart', err);
     }
-  }, [user, calculateGuestTotals, getGuestCart]);
+  }, [user, calculateTotals, getGuestCart, applyServerCart]);
 
   const handleGuestCartMerge = useCallback(async () => {
     if (user) {
@@ -90,35 +100,52 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = useCallback(async (product, selectedStorage, selectedColor, quantity = 1) => {
     const productId = product._id || product.id;
+    const storage = selectedStorage || 'Default';
+    const color = selectedColor || 'Default';
     
     if (!user) {
       const items = getGuestCart();
       const idx = items.findIndex(i => 
         i.productId === productId && 
-        i.selectedStorage === selectedStorage && 
-        i.selectedColor === selectedColor
+        i.selectedStorage === storage && 
+        i.selectedColor === color
       );
       if (idx > -1) {
         items[idx].quantity += quantity;
       } else {
-        items.push({ productId, product, selectedStorage, selectedColor, quantity });
+        items.push({ productId, product, selectedStorage: storage, selectedColor: color, quantity });
       }
       saveGuestCart(items);
       return;
     }
     
+    const { items: prevItems, totals: prevTotals } = stateRef.current;
+    
+    // Optimistic UI
+    const optimisticItems = [...prevItems];
+    const idx = optimisticItems.findIndex(i => {
+      const p = i.product || i.productId;
+      return p && (p._id === productId || p.id === productId) && i.selectedStorage === storage && i.selectedColor === color;
+    });
+    
+    if (idx > -1) {
+      optimisticItems[idx] = { ...optimisticItems[idx], quantity: optimisticItems[idx].quantity + quantity };
+    } else {
+      optimisticItems.push({ productId: product, selectedStorage: storage, selectedColor: color, quantity });
+    }
+    calculateTotals(optimisticItems);
+    
     try {
-      await cartService.addItem({ 
-        productId, 
-        quantity, 
-        selectedStorage: selectedStorage || 'Default', 
-        selectedColor: selectedColor || 'Default' 
-      });
-      await fetchCart();
+      const res = await cartService.addItem({ productId, quantity, selectedStorage: storage, selectedColor: color });
+      applyServerCart(res.data.data);
     } catch (err) {
+      // Revert
+      setCartItems(prevItems);
+      setCartTotals(prevTotals);
+      showToast(err?.response?.data?.message || 'Failed to add item', 'error');
       console.error('Failed to add to cart', err);
     }
-  }, [user, getGuestCart, saveGuestCart, fetchCart]);
+  }, [user, getGuestCart, saveGuestCart, calculateTotals, applyServerCart, showToast]);
 
   const removeFromCart = useCallback(async (productId, selectedStorage, selectedColor, cartItemId = null) => {
     if (!user) {
@@ -129,20 +156,30 @@ export const CartProvider = ({ children }) => {
       saveGuestCart(items);
       return;
     }
+
+    const { items: prevItems, totals: prevTotals } = stateRef.current;
+    const itemToRemove = prevItems.find(i => {
+      if (cartItemId && i._id === cartItemId) return true;
+      const p = i.product || i.productId;
+      return p && (p._id === productId || p.id === productId) && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor;
+    });
+
+    if (!itemToRemove) return;
+
+    // Optimistic UI
+    const optimisticItems = prevItems.filter(i => i._id !== itemToRemove._id);
+    calculateTotals(optimisticItems);
+
     try {
-      const item = cartItems.find(i => {
-        if (cartItemId && i._id === cartItemId) return true;
-        const p = i.product || i.productId;
-        return p && (p._id === productId || p.id === productId);
-      });
-      if (item && item._id) {
-        await cartService.removeItem(item._id);
-        await fetchCart();
-      }
+      const res = await cartService.removeItem(itemToRemove._id);
+      applyServerCart(res.data.data);
     } catch (err) {
+      setCartItems(prevItems);
+      setCartTotals(prevTotals);
+      showToast(err?.response?.data?.message || 'Failed to remove item', 'error');
       console.error('Failed to remove from cart', err);
     }
-  }, [user, cartItems, getGuestCart, saveGuestCart, fetchCart]);
+  }, [user, getGuestCart, saveGuestCart, calculateTotals, applyServerCart, showToast]);
 
   const updateQuantity = useCallback(async (productId, selectedStorage, selectedColor, quantity) => {
     if (quantity <= 0) {
@@ -161,34 +198,58 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
+    const { items: prevItems, totals: prevTotals } = stateRef.current;
+    const itemToUpdate = prevItems.find(i => {
+      const p = i.product || i.productId;
+      return p && (p._id === productId || p.id === productId) && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor;
+    });
+
+    if (!itemToUpdate) return;
+
+    // Optimistic UI
+    const optimisticItems = prevItems.map(i => 
+      i._id === itemToUpdate._id ? { ...i, quantity } : i
+    );
+    calculateTotals(optimisticItems);
+
     try {
-      const item = cartItems.find(i => {
-        const p = i.product || i.productId;
-        return p && (p._id === productId || p.id === productId);
-      });
-      if (item && item._id) {
-        await cartService.updateItem(item._id, quantity);
-        await fetchCart();
-      }
+      const res = await cartService.updateItem(itemToUpdate._id, quantity);
+      applyServerCart(res.data.data);
     } catch (err) {
+      setCartItems(prevItems);
+      setCartTotals(prevTotals);
+      showToast(err?.response?.data?.message || 'Failed to update quantity', 'error');
       console.error('Failed to update quantity', err);
     }
-  }, [user, cartItems, getGuestCart, saveGuestCart, removeFromCart, fetchCart]);
+  }, [user, getGuestCart, saveGuestCart, removeFromCart, calculateTotals, applyServerCart, showToast]);
 
   const clearCart = useCallback(async () => {
     if (!user) {
       saveGuestCart([]);
       return;
     }
+
+    const { items: prevItems, totals: prevTotals } = stateRef.current;
+    
+    // Optimistic UI
+    calculateTotals([]);
+
     try {
-      await cartService.clearCart();
-      await fetchCart();
+      const res = await cartService.clearCart();
+      if (res.data.data) {
+          applyServerCart(res.data.data);
+      } else {
+          // Fallback if clear doesn't return populated empty cart
+          calculateTotals([]);
+      }
     } catch (err) {
+      setCartItems(prevItems);
+      setCartTotals(prevTotals);
+      showToast(err?.response?.data?.message || 'Failed to clear cart', 'error');
       console.error('Failed to clear cart', err);
     }
-  }, [user, saveGuestCart, fetchCart]);
+  }, [user, saveGuestCart, calculateTotals, applyServerCart, showToast]);
 
-  // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(() => ({
     cartItems,
     cartTotals,

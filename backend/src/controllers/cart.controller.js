@@ -16,7 +16,10 @@ import {
 } from '../services/cart.service.js';
 
 export const getMyCart = asyncHandler(async (req, res) => {
+  const start = performance.now();
   const cart = await getCartByUserId(req.user._id);
+  const duration = performance.now() - start;
+  console.log(`[Perf] GET /cart API executed in ${duration.toFixed(2)}ms`);
 
   ApiResponse.success(
     res,
@@ -27,6 +30,7 @@ export const getMyCart = asyncHandler(async (req, res) => {
 });
 
 export const addCartItem = asyncHandler(async (req, res) => {
+  const start = performance.now();
   const { productId, selectedStorage, selectedColor, quantity } = req.body;
   const cart = await addItemToCart(req.user._id, {
     productId,
@@ -34,6 +38,8 @@ export const addCartItem = asyncHandler(async (req, res) => {
     selectedColor,
     quantity,
   });
+  const duration = performance.now() - start;
+  console.log(`[Perf] POST /cart API executed in ${duration.toFixed(2)}ms`);
 
   ApiResponse.success(
     res,
@@ -44,9 +50,12 @@ export const addCartItem = asyncHandler(async (req, res) => {
 });
 
 export const editCartItem = asyncHandler(async (req, res) => {
+  const start = performance.now();
   const { itemId } = req.params;
   const { quantity } = req.body;
   const cart = await updateItemQuantity(req.user._id, itemId, quantity);
+  const duration = performance.now() - start;
+  console.log(`[Perf] PUT /cart API executed in ${duration.toFixed(2)}ms`);
 
   ApiResponse.success(
     res,
@@ -57,8 +66,11 @@ export const editCartItem = asyncHandler(async (req, res) => {
 });
 
 export const removeCartItem = asyncHandler(async (req, res) => {
+  const start = performance.now();
   const { itemId } = req.params;
   const cart = await removeItemFromCart(req.user._id, itemId);
+  const duration = performance.now() - start;
+  console.log(`[Perf] DELETE /cart API executed in ${duration.toFixed(2)}ms`);
 
   ApiResponse.success(
     res,
@@ -69,7 +81,10 @@ export const removeCartItem = asyncHandler(async (req, res) => {
 });
 
 export const clearMyCart = asyncHandler(async (req, res) => {
+  const start = performance.now();
   await emptyCart(req.user._id);
+  const duration = performance.now() - start;
+  console.log(`[Perf] DELETE /cart (clear) API executed in ${duration.toFixed(2)}ms`);
 
   ApiResponse.success(
     res,
@@ -79,8 +94,11 @@ export const clearMyCart = asyncHandler(async (req, res) => {
 });
 
 export const mergeCart = asyncHandler(async (req, res) => {
+  const start = performance.now();
   const { guestItems } = req.body;
   const result = await mergeGuestCart(req.user._id, guestItems);
+  const duration = performance.now() - start;
+  console.log(`[Perf] POST /cart/merge API executed in ${duration.toFixed(2)}ms`);
 
   ApiResponse.success(
     res,

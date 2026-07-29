@@ -66,7 +66,8 @@ const cartSchema = new mongoose.Schema(
 /* --------------------------------------------------------------------------
    Indexes
    -------------------------------------------------------------------------- */
-// Indexes handled by field definitions
+// userId is automatically indexed via unique: true
+cartSchema.index({ 'items.productId': 1 });
 
 const Cart = mongoose.model('Cart', cartSchema);
 
