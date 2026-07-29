@@ -10,12 +10,32 @@ import { sendOrderConfirmationEmail } from './email.service.js';
 
 // Initialize Razorpay client only if keys are present
 let razorpay;
-if (env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET) {
+const keyId = env.RAZORPAY_KEY_ID?.trim();
+const keySecret = env.RAZORPAY_KEY_SECRET?.trim();
+
+console.log('--- Razorpay Initialization ---');
+console.log(`RAZORPAY_KEY_ID exists: ${!!keyId}`);
+console.log(`RAZORPAY_KEY_SECRET exists: ${!!keySecret}`);
+
+if (keyId && keySecret) {
+  const isTestKey = keyId.startsWith('rzp_test_');
+  const isLiveKey = keyId.startsWith('rzp_live_');
+  console.log(`Key type: ${isTestKey ? 'TEST' : isLiveKey ? 'LIVE' : 'UNKNOWN'}`);
+  
+  // Verify test vs live key consistency (Secrets don't have rzp_test_ prefix, but we can verify we are using correct keys)
+  if (!isTestKey && !isLiveKey) {
+    console.warn('⚠️ WARNING: RAZORPAY_KEY_ID does not start with rzp_test_ or rzp_live_.');
+  }
+
   razorpay = new Razorpay({
-    key_id: env.RAZORPAY_KEY_ID,
-    key_secret: env.RAZORPAY_KEY_SECRET,
+    key_id: keyId,
+    key_secret: keySecret,
   });
+  console.log('Razorpay client successfully initialized.');
+} else {
+  console.log('Razorpay keys missing. Client NOT initialized.');
 }
+console.log('-------------------------------');
 
 export const createPaymentIntent = async (orderId, userId) => {
   const order = await Order.findOne({ orderId, userId });
@@ -79,10 +99,13 @@ export const createPaymentIntent = async (orderId, userId) => {
     console.log('\n==========================================');
     console.log('PAYMENT FAILED');
     console.log('==========================================');
-    console.log(`Status Code: ${error.statusCode || 'N/A'}`);
-    console.log(`Reason: ${error.error?.reason || error.message}`);
-    console.log(`Description: ${error.error?.description || 'N/A'}`);
-    console.log(`Metadata:`, JSON.stringify(error.error?.metadata || {}, null, 2));
+    console.log('Exact Razorpay SDK error object:', error);
+    console.log(`error.statusCode: ${error.statusCode}`);
+    console.log('error.error:', error.error);
+    console.log('error.response:', error.response);
+    console.log(`error.message: ${error.message}`);
+    console.log(`error.description: ${error.description}`);
+    console.log(`error.stack: ${error.stack}`);
     console.log('==========================================\n');
 
     throw new ApiError(500, `Failed to create Razorpay order: ${error.message}`);
