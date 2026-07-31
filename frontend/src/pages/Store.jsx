@@ -33,7 +33,7 @@ export const Store = () => {
   const brand = searchParams.get('brand') || 'All';
   const productCondition = searchParams.get('productCondition') || searchParams.get('conditionType') || searchParams.get('condition') || 'All';
   const availability = searchParams.get('availability') || 'All';
-  const minPrice = searchParams.get('minPrice') || 10000;
+  const minPrice = searchParams.get('minPrice') || 0;
   const maxPrice = searchParams.get('maxPrice') || 150000;
   const sort = searchParams.get('sort') || 'Popular';
   const searchQuery = searchParams.get('search') || '';
