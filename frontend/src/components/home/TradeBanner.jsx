@@ -2,7 +2,7 @@ import React from 'react';
 import Container from '../ui/Container';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import tradeInPhone from '../../assets/trade_in_phone.png';
+import tradeInPhone from '../../assets/trade_in_phone.webp';
 
 /* ==========================================================================
    TradeBanner Component

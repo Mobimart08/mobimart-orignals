@@ -7,7 +7,7 @@ import {
   RotateCcw, 
   Mail 
 } from 'lucide-react';
-import mobimartLogo from '../../assets/mobimart_logo.png';
+import mobimartLogo from '../../assets/mobimart_logo.webp';
 
 /* ==========================================================================
    Footer Component

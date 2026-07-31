@@ -13,8 +13,8 @@ import SEO from '../components/ui/SEO';
 import ScrollReveal from '../components/ui/ScrollReveal';
 import { CertificationModal, WarrantyModal, ShippingPolicyModal, WhyChooseModal } from '../components/ui/InfoModals';
 import ComingSoonBottomSheet from '../components/ui/ComingSoonBottomSheet';
-import mobimartOriginalsBannerBg from '../assets/mobimart_originals_banner_bg.png';
-import mobimartLogo from '../assets/mobimart_logo.png';
+import mobimartOriginalsBannerBg from '../assets/mobimart_originals_banner_bg.webp';
+import mobimartLogo from '../assets/mobimart_logo.webp';
 
 export const Home = () => {
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
@@ -34,7 +34,7 @@ export const Home = () => {
     "@type": "Organization",
     "name": "MobiMart Premium",
     "url": "https://www.mobimart.in",
-    "logo": "https://www.mobimart.in/assets/mobimart_logo.png",
+    "logo": "https://www.mobimart.in/assets/mobimart_logo.webp",
     "description": "Premium certified pre-owned and refurbished smartphones.",
     "sameAs": [
       "https://www.facebook.com/mobimart",

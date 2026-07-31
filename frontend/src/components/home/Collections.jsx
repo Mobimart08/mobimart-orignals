@@ -4,10 +4,10 @@ import Container from '../ui/Container';
 import SectionTitle from '../ui/SectionTitle';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import collectionIphone from '../../assets/collection_iphone.png';
-import collectionAndroid from '../../assets/collection_android.png';
-import collectionPreowned from '../../assets/collection_preowned.png';
-import collectionBudget from '../../assets/collection_budget.png';
+import collectionIphone from '../../assets/collection_iphone.webp';
+import collectionAndroid from '../../assets/collection_android.webp';
+import collectionPreowned from '../../assets/collection_preowned.webp';
+import collectionBudget from '../../assets/collection_budget.webp';
 
 /* ==========================================================================
    Collections Component

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Container from '../ui/Container';
 import Button from '../ui/Button';
-import heroBgBanner from '../../assets/hero_bg_banner.png';
+import heroBgBanner from '../../assets/hero_bg_banner.webp';
 
 /* ==========================================================================
    Hero Section

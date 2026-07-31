@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Search } from 'lucide-react';
-import mobimartLogo from '../../assets/mobimart_logo.png';
+import mobimartLogo from '../../assets/mobimart_logo.webp';
 
 /* ==========================================================================
    Global Navbar Component

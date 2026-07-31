@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Search, ShoppingCart, ArrowLeft } from 'lucide-react';
-import mobimartLogo from '../../assets/mobimart_logo.png';
+import mobimartLogo from '../../assets/mobimart_logo.webp';
 
 /* ==========================================================================
    DashboardHeader Component

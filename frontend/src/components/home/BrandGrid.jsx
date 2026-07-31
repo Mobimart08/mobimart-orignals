@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import Container from '../ui/Container';
 import SectionTitle from '../ui/SectionTitle';
 import Card from '../ui/Card';
-import brandAppleIphone from '../../assets/brand_apple_iphone.png';
-import brandSamsungPhone from '../../assets/brand_samsung_phone.png';
-import brandGooglePhone from '../../assets/brand_google_phone.png';
-import brandNothingPhone from '../../assets/brand_nothing_phone.png';
-import brandOneplusPhone from '../../assets/brand_oneplus_phone.png';
+import brandAppleIphone from '../../assets/brand_apple_iphone.webp';
+import brandSamsungPhone from '../../assets/brand_samsung_phone.webp';
+import brandGooglePhone from '../../assets/brand_google_phone.webp';
+import brandNothingPhone from '../../assets/brand_nothing_phone.webp';
+import brandOneplusPhone from '../../assets/brand_oneplus_phone.webp';
 
 /* ==========================================================================
    BrandGrid Component
