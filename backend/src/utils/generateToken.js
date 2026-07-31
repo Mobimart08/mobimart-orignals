@@ -111,6 +111,17 @@ export const getRefreshTokenExpiry = () => {
 };
 
 /**
+ * Base cookie options used for both setting and clearing.
+ * Ensures the browser perfectly matches the cookie when deleting.
+ */
+const getCookieOptions = () => ({
+  httpOnly: true,                                         // Not accessible via JS — XSS protection
+  secure: env.IS_PRODUCTION,                              // HTTPS only in production
+  sameSite: env.IS_PRODUCTION ? 'none' : 'lax',           // 'none' required for cross-domain
+  path: '/',
+});
+
+/**
  * Sets the refresh token as an HttpOnly cookie on the response.
  * Centralizes all cookie config in one place.
  *
@@ -118,15 +129,10 @@ export const getRefreshTokenExpiry = () => {
  * @param {string} refreshToken - The raw refresh token JWT
  */
 export const setRefreshTokenCookie = (res, refreshToken) => {
-  const cookieOptions = {
-    httpOnly: true,                                         // Not accessible via JS — XSS protection
-    secure: env.IS_PRODUCTION,                              // HTTPS only in production
-    sameSite: env.IS_PRODUCTION ? 'none' : 'lax',           // 'none' required for cross-domain
-    path: '/',
+  res.cookie('refreshToken', refreshToken, {
+    ...getCookieOptions(),
     maxAge: 7 * 24 * 60 * 60 * 1000,                        // Persistent cookie — survives browser restart (7 days)
-  };
-
-  res.cookie('refreshToken', refreshToken, cookieOptions);
+  });
 };
 
 /**
@@ -137,10 +143,7 @@ export const setRefreshTokenCookie = (res, refreshToken) => {
  */
 export const clearRefreshTokenCookie = (res) => {
   res.cookie('refreshToken', '', {
-    httpOnly: true,
-    secure: env.IS_PRODUCTION,
-    sameSite: env.IS_PRODUCTION ? 'none' : 'lax',
+    ...getCookieOptions(),
     maxAge: 0,  // Expires immediately
-    path: '/',
   });
 };

@@ -11,6 +11,7 @@ import Reviews from '../components/home/Reviews';
 import Newsletter from '../components/home/Newsletter';
 import SEO from '../components/ui/SEO';
 import ScrollReveal from '../components/ui/ScrollReveal';
+import LazySection from '../components/ui/LazySection';
 import { CertificationModal, WarrantyModal, ShippingPolicyModal, WhyChooseModal } from '../components/ui/InfoModals';
 import ComingSoonBottomSheet from '../components/ui/ComingSoonBottomSheet';
 import mobimartOriginalsBannerBg from '../assets/mobimart_originals_banner_bg.webp';
@@ -59,7 +60,8 @@ export const Home = () => {
             alt="Mobimart Originals Banner Background" 
             width="1024"
             height="576"
-            loading="lazy"
+            fetchpriority="high"
+            loading="eager"
             decoding="async"
             className="w-full h-full object-cover block"
           />
@@ -69,7 +71,8 @@ export const Home = () => {
               alt="Mobimart Originals Logo" 
               width="612"
               height="408"
-              loading="lazy"
+              fetchpriority="high"
+              loading="eager"
               decoding="async"
               className="h-[80%] w-auto object-contain"
             />
@@ -87,35 +90,49 @@ export const Home = () => {
             onShippingClick={() => setIsShippingModalOpen(true)}
           />
         </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <BrandGrid />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <Collections />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <FeaturedProducts />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <WhyChoose onCardClick={() => setIsWhyChooseModalOpen(true)} />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <TradeBanner onDiscoverClick={() => openComingSoon('Trade-In Program')} />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <Reviews />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <Newsletter />
-        </ScrollReveal>
+        <LazySection>
+          <ScrollReveal delay={100}>
+            <BrandGrid />
+          </ScrollReveal>
+        </LazySection>
+        <LazySection>
+          <ScrollReveal delay={100}>
+            <Collections />
+          </ScrollReveal>
+        </LazySection>
+        <LazySection>
+          <ScrollReveal delay={100}>
+            <FeaturedProducts />
+          </ScrollReveal>
+        </LazySection>
+        <LazySection>
+          <ScrollReveal delay={100}>
+            <WhyChoose onCardClick={() => setIsWhyChooseModalOpen(true)} />
+          </ScrollReveal>
+        </LazySection>
+        <LazySection>
+          <ScrollReveal delay={100}>
+            <TradeBanner onDiscoverClick={() => openComingSoon('Trade-In Program')} />
+          </ScrollReveal>
+        </LazySection>
+        <LazySection>
+          <ScrollReveal delay={100}>
+            <Reviews />
+          </ScrollReveal>
+        </LazySection>
+        <LazySection>
+          <ScrollReveal delay={100}>
+            <Newsletter />
+          </ScrollReveal>
+        </LazySection>
       </div>
 
       {/* Modals & Sheets */}
-      <CertificationModal isOpen={isCertModalOpen} onClose={() => setIsCertModalOpen(false)} />
-      <WarrantyModal isOpen={isWarrantyModalOpen} onClose={() => setIsWarrantyModalOpen(false)} />
-      <ShippingPolicyModal isOpen={isShippingModalOpen} onClose={() => setIsShippingModalOpen(false)} />
-      <WhyChooseModal isOpen={isWhyChooseModalOpen} onClose={() => setIsWhyChooseModalOpen(false)} />
-      <ComingSoonBottomSheet isOpen={isComingSoonOpen} onClose={() => setIsComingSoonOpen(false)} title={comingSoonTitle} />
+      {isCertModalOpen && <CertificationModal isOpen={isCertModalOpen} onClose={() => setIsCertModalOpen(false)} />}
+      {isWarrantyModalOpen && <WarrantyModal isOpen={isWarrantyModalOpen} onClose={() => setIsWarrantyModalOpen(false)} />}
+      {isShippingModalOpen && <ShippingPolicyModal isOpen={isShippingModalOpen} onClose={() => setIsShippingModalOpen(false)} />}
+      {isWhyChooseModalOpen && <WhyChooseModal isOpen={isWhyChooseModalOpen} onClose={() => setIsWhyChooseModalOpen(false)} />}
+      {isComingSoonOpen && <ComingSoonBottomSheet isOpen={isComingSoonOpen} onClose={() => setIsComingSoonOpen(false)} title={comingSoonTitle} />}
     </MainLayout>
   );
 };

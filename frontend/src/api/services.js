@@ -1,6 +1,24 @@
 import apiClient, { API_URL } from './client';
 import axios from 'axios';
 
+// Simple in-memory cache
+const cache = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const fetchWithCache = async (key, fetcher, options = {}) => {
+  const { forceRefresh = false, signal } = options;
+  if (!forceRefresh && cache.has(key)) {
+    const { data, timestamp } = cache.get(key);
+    if (Date.now() - timestamp < CACHE_DURATION) {
+      return data;
+    }
+    cache.delete(key);
+  }
+  const response = await fetcher({ signal });
+  cache.set(key, { data: response, timestamp: Date.now() });
+  return response;
+};
+
 export const authService = {
   login: (credentials) => apiClient.post('/auth/login', credentials),
   register: (userData) => apiClient.post('/auth/register', userData),
@@ -36,9 +54,18 @@ export const notificationService = {
 };
 
 export const productsService = {
-  getAll: (params) => apiClient.get('/products', { params }),
-  getById: (id) => apiClient.get(`/products/${id}`),
-  getRelated: (slug, limit = 4) => apiClient.get(`/products/${slug}/related`, { params: { limit } }),
+  getAll: (params, options) => {
+    const key = `products_all_${JSON.stringify(params || {})}`;
+    return fetchWithCache(key, (config) => apiClient.get('/products', { params, ...config }), options);
+  },
+  getById: (id, options) => {
+    const key = `products_id_${id}`;
+    return fetchWithCache(key, (config) => apiClient.get(`/products/${id}`, config), options);
+  },
+  getRelated: (slug, limit = 4, options) => {
+    const key = `products_related_${slug}_${limit}`;
+    return fetchWithCache(key, (config) => apiClient.get(`/products/${slug}/related`, { params: { limit }, ...config }), options);
+  },
   create: (data) => apiClient.post('/products', data),
   update: (id, data) => apiClient.put(`/products/${id}`, data),
   delete: (id) => apiClient.delete(`/products/${id}`),
@@ -86,16 +113,28 @@ export const couponService = {
 };
 
 export const brandService = {
-  getAll: (params) => apiClient.get('/brands', { params }),
-  getById: (id) => apiClient.get(`/brands/${id}`),
+  getAll: (params, options) => {
+    const key = `brands_all_${JSON.stringify(params || {})}`;
+    return fetchWithCache(key, (config) => apiClient.get('/brands', { params, ...config }), options);
+  },
+  getById: (id, options) => {
+    const key = `brands_id_${id}`;
+    return fetchWithCache(key, (config) => apiClient.get(`/brands/${id}`, config), options);
+  },
   create: (data) => apiClient.post('/brands', data),
   update: (id, data) => apiClient.put(`/brands/${id}`, data),
   delete: (id) => apiClient.delete(`/brands/${id}`),
 };
 
 export const categoryService = {
-  getAll: (params) => apiClient.get('/categories', { params }),
-  getById: (id) => apiClient.get(`/categories/${id}`),
+  getAll: (params, options) => {
+    const key = `categories_all_${JSON.stringify(params || {})}`;
+    return fetchWithCache(key, (config) => apiClient.get('/categories', { params, ...config }), options);
+  },
+  getById: (id, options) => {
+    const key = `categories_id_${id}`;
+    return fetchWithCache(key, (config) => apiClient.get(`/categories/${id}`, config), options);
+  },
   create: (data) => apiClient.post('/categories', data),
   update: (id, data) => apiClient.put(`/categories/${id}`, data),
   delete: (id) => apiClient.delete(`/categories/${id}`),

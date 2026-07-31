@@ -15,7 +15,7 @@ import { productsService } from '../../api/services';
    - All cards link to /product/:id PDP routes
    ========================================================================== */
 
-export const FeaturedProducts = () => {
+export const FeaturedProducts = React.memo(() => {
   const [backendProducts, setBackendProducts] = useState([]);
 
   useEffect(() => {
@@ -69,6 +69,8 @@ export const FeaturedProducts = () => {
                   <img
                     src={heroImage}
                     alt={featuredHero.name}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-auto object-contain object-bottom drop-shadow-xl transition-opacity duration-300 opacity-95 group-hover:opacity-100"
                   />
                 </div>
@@ -149,6 +151,8 @@ export const FeaturedProducts = () => {
                     <img
                       src={pImage}
                       alt={product.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-auto object-contain transition-opacity duration-300 opacity-95 group-hover:opacity-100"
                     />
                   </div>
@@ -200,6 +204,6 @@ export const FeaturedProducts = () => {
       </Container>
     </section>
   );
-};
+});
 
 export default FeaturedProducts;

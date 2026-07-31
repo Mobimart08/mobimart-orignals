@@ -7,7 +7,7 @@ import React from 'react';
    - Provides consistent rounded-2xl or rounded-xl spacing
    ========================================================================== */
 
-export const Card = ({
+export const Card = React.memo(({
   children,
   variant = 'light',
   interactive = false,
@@ -32,6 +32,6 @@ export const Card = ({
       {children}
     </div>
   );
-};
+});
 
 export default Card;

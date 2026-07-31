@@ -94,31 +94,41 @@ export const MainLayout = ({ children }) => {
       )}
 
       {/* Global Search Drawer */}
-      <GlobalSearchDrawer 
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-      />
+      {isSearchOpen && (
+        <GlobalSearchDrawer 
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+        />
+      )}
 
       {/* Info Modals */}
-      <CertificationModal 
-        isOpen={isCertModalOpen}
-        onClose={() => setIsCertModalOpen(false)}
-      />
-      <WarrantyModal 
-        isOpen={isWarrantyModalOpen}
-        onClose={() => setIsWarrantyModalOpen(false)}
-      />
-      <ShippingPolicyModal 
-        isOpen={isShippingModalOpen}
-        onClose={() => setIsShippingModalOpen(false)}
-      />
+      {isCertModalOpen && (
+        <CertificationModal 
+          isOpen={isCertModalOpen}
+          onClose={() => setIsCertModalOpen(false)}
+        />
+      )}
+      {isWarrantyModalOpen && (
+        <WarrantyModal 
+          isOpen={isWarrantyModalOpen}
+          onClose={() => setIsWarrantyModalOpen(false)}
+        />
+      )}
+      {isShippingModalOpen && (
+        <ShippingPolicyModal 
+          isOpen={isShippingModalOpen}
+          onClose={() => setIsShippingModalOpen(false)}
+        />
+      )}
 
       {/* Coming Soon Bottom Sheet */}
-      <ComingSoonBottomSheet 
-        isOpen={isComingSoonOpen}
-        onClose={() => setIsComingSoonOpen(false)}
-        title={comingSoonTitle}
-      />
+      {isComingSoonOpen && (
+        <ComingSoonBottomSheet 
+          isOpen={isComingSoonOpen}
+          onClose={() => setIsComingSoonOpen(false)}
+          title={comingSoonTitle}
+        />
+      )}
     </div>
   );
 };

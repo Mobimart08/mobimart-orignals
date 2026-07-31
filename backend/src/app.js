@@ -26,7 +26,7 @@ import apiRouter from './routes/index.js';
 const app = express();
 
 // Trust the reverse proxy (e.g., Render, Heroku, Nginx) to ensure req.ip and req.secure work correctly
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
 /* ==========================================================================
    SECTION 1 — Security Headers (Helmet)
@@ -39,11 +39,25 @@ app.use(helmet());
    Allows only the configured frontend origin.
    credentials: true is required for HttpOnly cookies (refresh token).
    ========================================================================== */
+const allowedOrigins = [
+  'https://mobimartoriginals.com',
+  'https://www.mobimartoriginals.com'
+];
+
 app.use(
   cors({
-    origin: env.IS_PRODUCTION ? env.FRONTEND_URL : true,
+    origin: function (origin, callback) {
+      if (!env.IS_PRODUCTION) {
+        return callback(null, true);
+      }
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );

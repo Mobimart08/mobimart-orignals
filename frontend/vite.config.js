@@ -15,6 +15,7 @@ export default defineConfig({
     target: 'es2020',
     reportCompressedSize: false, // Faster builds
     chunkSizeWarningLimit: 600,
+    cssCodeSplit: true, // Optimize CSS delivery by route
     assetsInlineLimit: 4096, // Inline assets < 4KB
     rollupOptions: {
       output: {
