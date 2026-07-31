@@ -1,8 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, MessageSquare } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
+  const { logout } = useAuth();
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Products', path: '/admin/products', icon: Package },
@@ -59,7 +61,13 @@ const AdminSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
         {/* Bottom Action (Logout) */}
         <div className="absolute bottom-0 w-full p-4 border-t border-neutral-100">
-          <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium text-neutral-500 hover:bg-red-50 hover:text-red-600 transition-colors">
+          <button 
+            onClick={() => {
+              setIsMobileMenuOpen?.(false);
+              logout();
+            }}
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium text-neutral-500 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
+          >
             <LogOut size={18} />
             Logout
           </button>

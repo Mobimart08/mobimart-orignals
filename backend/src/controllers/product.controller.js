@@ -15,6 +15,7 @@ import {
   deleteProduct,
   queryProducts,
 } from '../services/product.service.js';
+import { clearCacheMatch } from '../middlewares/cache.middleware.js';
 
 export const listProducts = asyncHandler(async (req, res) => {
   const result = await queryProducts(req.query);
@@ -73,6 +74,7 @@ export const getRelated = asyncHandler(async (req, res) => {
 
 export const addProduct = asyncHandler(async (req, res) => {
   const product = await createProduct(req.body);
+  await clearCacheMatch('/api/v1/products*');
 
   ApiResponse.success(
     res,
@@ -85,6 +87,7 @@ export const addProduct = asyncHandler(async (req, res) => {
 export const editProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const product = await updateProduct(id, req.body);
+  await clearCacheMatch('/api/v1/products*');
 
   ApiResponse.success(
     res,
@@ -97,6 +100,7 @@ export const editProduct = asyncHandler(async (req, res) => {
 export const removeProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   await deleteProduct(id);
+  await clearCacheMatch('/api/v1/products*');
 
   ApiResponse.success(
     res,

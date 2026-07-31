@@ -66,9 +66,21 @@ export const productsService = {
     const key = `products_related_${slug}_${limit}`;
     return fetchWithCache(key, (config) => apiClient.get(`/products/${slug}/related`, { params: { limit }, ...config }), options);
   },
-  create: (data) => apiClient.post('/products', data),
-  update: (id, data) => apiClient.put(`/products/${id}`, data),
-  delete: (id) => apiClient.delete(`/products/${id}`),
+  create: async (data) => {
+    const res = await apiClient.post('/products', data);
+    cache.clear();
+    return res;
+  },
+  update: async (id, data) => {
+    const res = await apiClient.put(`/products/${id}`, data);
+    cache.clear();
+    return res;
+  },
+  delete: async (id) => {
+    const res = await apiClient.delete(`/products/${id}`);
+    cache.clear();
+    return res;
+  },
 };
 
 export const cartService = {

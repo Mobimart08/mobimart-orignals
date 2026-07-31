@@ -33,6 +33,18 @@ const ImageManager = ({ images, setFormData, maxImages = 5 }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [imageSrc, loading]);
 
+  // Lock background scroll when modal is open
+  useEffect(() => {
+    if (imageSrc) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [imageSrc]);
+
   const onImageLoaded = useCallback((image) => {
     // Need to calculate approximate original size since we only have data URL
     // Data URL size is roughly base64 length * 0.75
@@ -248,11 +260,19 @@ const ImageManager = ({ images, setFormData, maxImages = 5 }) => {
 
       {/* Premium Cropper Modal */}
       {imageSrc && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm transition-opacity duration-150">
-          <div className="bg-white rounded-2xl w-full max-w-[1200px] max-h-[95vh] overflow-hidden flex flex-col shadow-2xl border border-neutral-100 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-150">
+          <div 
+            className="bg-white rounded-2xl flex flex-col shadow-2xl border border-neutral-100 animate-in fade-in zoom-in-95 duration-150 overflow-hidden"
+            style={{ 
+              width: '96vw', 
+              maxWidth: 'min(96vw, 1700px)', 
+              height: '94vh', 
+              maxHeight: '94vh' 
+            }}
+          >
             
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-white">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-white shrink-0">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-neutral-50 rounded-xl border border-neutral-100">
                   <ImageIcon size={20} className="text-neutral-700" />
@@ -442,7 +462,7 @@ const ImageManager = ({ images, setFormData, maxImages = 5 }) => {
             </div>
             
             {/* Action Bar */}
-            <div className="p-4 px-6 border-t border-neutral-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-4 px-6 border-t border-neutral-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0 sticky bottom-0 z-20">
               <span className="text-xs text-neutral-400 font-medium hidden sm:block">
                 Drag to reposition • Scroll to zoom • Double click to fit
               </span>
