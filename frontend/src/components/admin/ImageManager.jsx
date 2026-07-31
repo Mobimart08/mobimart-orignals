@@ -38,10 +38,10 @@ const ImageManager = ({ images, setFormData, maxImages = 5 }) => {
     if (imageSrc) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'unset';
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'unset';
     };
   }, [imageSrc]);
 

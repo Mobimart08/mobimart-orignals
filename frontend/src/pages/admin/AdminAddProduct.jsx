@@ -180,7 +180,12 @@ const AdminAddProduct = () => {
         }
       }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Error saving product', 'error');
+      const errData = error.response?.data;
+      if (errData?.errors && errData.errors.length > 0) {
+        showToast(errData.errors[0].message, 'error');
+      } else {
+        showToast(errData?.message || 'Error saving product', 'error');
+      }
     } finally {
       setSaving(false);
     }
