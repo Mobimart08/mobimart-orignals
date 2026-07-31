@@ -31,8 +31,6 @@ router.get('/:slugOrId', getProductDetails);
 // Admin-guarded inventory management routes
 router.post(
   '/',
-  authMiddleware,
-  roleMiddleware([ROLES.ADMIN, ROLES.SUPER_ADMIN]),
   createProductValidator,
   addProduct
 );

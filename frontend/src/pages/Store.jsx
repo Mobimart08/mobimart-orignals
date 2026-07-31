@@ -160,8 +160,8 @@ export const Store = () => {
               </button>
             </div>
           ) : isLoading ? (
-            <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mt-4">
-              {Array.from({ length: 8 }).map((_, i) => <SkeletonProduct key={i} />)}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
+          {Array.from({ length: 8 }).map((_, i) => <SkeletonProduct key={i} />)}
             </div>
           ) : backendProducts.length === 0 ? (
             <div className="w-full py-16 text-center select-none">

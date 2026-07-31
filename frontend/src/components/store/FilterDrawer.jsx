@@ -6,7 +6,7 @@ const PRODUCT_CONDITIONS = ['All', 'New', 'Used', 'Refurbished', 'Open Box'];
 const AVAILABILITY_OPTIONS = ['All', 'In Stock', 'Out of Stock'];
 
 export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters = {} }) => {
-  const [minPrice, setMinPrice] = useState(currentFilters.minPrice || 0);
+  const [minPrice, setMinPrice] = useState(currentFilters.minPrice || 10000);
   const [maxPrice, setMaxPrice] = useState(currentFilters.maxPrice || 150000);
   const [selectedBrand, setSelectedBrand] = useState(currentFilters.brand || 'All');
   const [selectedCategory, setSelectedCategory] = useState(currentFilters.category || 'All');
@@ -21,7 +21,7 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
   const [isSortOpen, setIsSortOpen] = useState(true);
 
   useEffect(() => {
-    setMinPrice(currentFilters.minPrice || 0);
+    setMinPrice(currentFilters.minPrice || 10000);
     setMaxPrice(currentFilters.maxPrice || 150000);
     setSelectedBrand(currentFilters.brand || 'All');
     setSelectedCategory(currentFilters.category || 'All');
@@ -41,7 +41,7 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
   }, []);
 
   const handleReset = () => {
-    setMinPrice(0);
+    setMinPrice(10000);
     setMaxPrice(150000);
     setSelectedBrand('All');
     setSelectedCategory('All');
@@ -50,7 +50,7 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
     setSelectedSort('Popular');
     // For desktop, auto-apply on reset
     onApplyFilters?.({
-      minPrice: 0, maxPrice: 150000, brand: 'All', category: 'All',
+      minPrice: 10000, maxPrice: 150000, brand: 'All', category: 'All',
       productCondition: 'All', availability: 'All', sort: 'Popular',
     });
   };
@@ -119,11 +119,11 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
         </div>
         <div className="relative w-full h-8 flex items-center px-1">
           <div className="absolute left-1.5 right-1.5 h-1 bg-neutral-150 rounded-full z-0 pointer-events-none"></div>
-          <div className="absolute h-1 bg-gold-accent rounded-full z-10 pointer-events-none" style={{ left: `${(minPrice / 150000) * 100}%`, right: `${100 - (maxPrice / 150000) * 100}%` }}></div>
-          <input type="range" min="0" max="150000" step="5000" value={minPrice} onChange={(e) => setMinPrice(Math.min(Number(e.target.value), maxPrice - 5000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
-          <input type="range" min="0" max="150000" step="5000" value={maxPrice} onChange={(e) => setMaxPrice(Math.max(Number(e.target.value), minPrice + 5000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
-          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${(minPrice / 150000) * 100}% - 8px)` }}></div>
-          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${(maxPrice / 150000) * 100}% - 8px)` }}></div>
+          <div className="absolute h-1 bg-gold-accent rounded-full z-10 pointer-events-none" style={{ left: `${((minPrice - 10000) / 140000) * 100}%`, right: `${100 - ((maxPrice - 10000) / 140000) * 100}%` }}></div>
+          <input type="range" min="10000" max="150000" step="5000" value={minPrice} onChange={(e) => setMinPrice(Math.min(Number(e.target.value), maxPrice - 10000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
+          <input type="range" min="10000" max="150000" step="5000" value={maxPrice} onChange={(e) => setMaxPrice(Math.max(Number(e.target.value), minPrice + 10000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
+          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${((minPrice - 10000) / 140000) * 100}% - 8px)` }}></div>
+          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${((maxPrice - 10000) / 140000) * 100}% - 8px)` }}></div>
         </div>
       </div>
 

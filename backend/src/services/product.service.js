@@ -172,7 +172,6 @@ const buildPublicProductQuery = async (queryParams) => {
     mongoQuery.stock = { $gt: 0 };
   }
 
-  console.log('DEBUG_MONGO_QUERY:', JSON.stringify(mongoQuery));
   return mongoQuery;
 };
 
