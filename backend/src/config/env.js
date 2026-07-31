@@ -87,6 +87,12 @@ const env = {
 
   // CORS
   FRONTEND_URL: process.env.FRONTEND_URL,
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : [
+        'https://mobimartoriginals.com',
+        'https://www.mobimartoriginals.com',
+      ],
 
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 60000,

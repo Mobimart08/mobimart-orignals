@@ -38,7 +38,11 @@ const originValidationMiddleware = (req, res, next) => {
     return next();
   }
 
-  if (origin !== env.FRONTEND_URL) {
+  const allowedOrigins = env.ALLOWED_ORIGINS;
+
+  const isAllowed = origin && allowedOrigins.includes(origin);
+
+  if (!isAllowed) {
     return next(new ForbiddenError('Invalid origin. CSRF check failed.'));
   }
   next();

@@ -39,10 +39,7 @@ app.use(helmet());
    Allows only the configured frontend origin.
    credentials: true is required for HttpOnly cookies (refresh token).
    ========================================================================== */
-const allowedOrigins = [
-  'https://mobimartoriginals.com',
-  'https://www.mobimartoriginals.com'
-];
+const allowedOrigins = env.ALLOWED_ORIGINS;
 
 app.use(
   cors({
