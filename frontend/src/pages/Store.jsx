@@ -142,24 +142,7 @@ export const Store = () => {
             />
             
             <div className="w-full mt-2 lg:mt-0">
-          {category && category.toLowerCase() !== 'all' && category.toLowerCase() !== 'smartphones' ? (
-            <div className="w-full py-20 flex flex-col items-center justify-center text-center select-none animate-fade-in px-4">
-              <div className="w-24 h-24 mb-6 rounded-3xl bg-gradient-to-tr from-neutral-100 to-white shadow-premium flex items-center justify-center border border-white">
-                <Package size={40} className="text-gold-accent" strokeWidth={1.5} />
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-neutral-950 mb-3 tracking-tight">Coming Soon</h2>
-              <p className="text-sm sm:text-base text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">
-                We're expanding this category. Stay tuned for exciting products.
-              </p>
-              <button 
-                type="button" 
-                onClick={() => updateParams({ category: 'Smartphones' })} 
-                className="px-8 py-3.5 bg-neutral-950 text-white text-sm font-bold rounded-full shadow-lg shadow-neutral-900/20 hover:bg-neutral-850 hover:-translate-y-0.5 transition-all cursor-pointer"
-              >
-                Back to Smartphones
-              </button>
-            </div>
-          ) : isLoading ? (
+          {isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
           {Array.from({ length: 8 }).map((_, i) => <SkeletonProduct key={i} />)}
             </div>

@@ -142,7 +142,8 @@ export const BrandTabs = ({ activeBrand = 'All', onBrandSelect }) => {
   };
 
   const tabsToRender = brands.map(brand => ({
-    id: brand._id || brand.id, // use _id for API matching
+    value: brand._id === 'All' ? 'All' : brand._id,
+    legacyValue: brand.name, // To match against legacy URLs
     label: brand.name,
     icon: (isActive) => getIconForBrand(brand.name, isActive)
   }));
@@ -159,15 +160,15 @@ export const BrandTabs = ({ activeBrand = 'All', onBrandSelect }) => {
         className="flex items-center gap-4 lg:gap-6 overflow-x-auto whitespace-nowrap no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing select-none"
       >
         {tabsToRender.map((tab) => {
-          const isActive = tab.id.toLowerCase() === activeBrand.toLowerCase();
+          const isActive = tab.value === activeBrand || tab.legacyValue.toLowerCase() === activeBrand.toLowerCase();
           
           return (
             <button
-              key={tab.id}
+              key={tab.value}
               type="button"
               onClick={() => {
                 if (onBrandSelect) {
-                  onBrandSelect(tab.id);
+                  onBrandSelect(tab.value);
                 }
               }}
               className="flex flex-col items-center shrink-0 cursor-pointer focus:outline-none group"

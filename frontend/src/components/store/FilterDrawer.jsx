@@ -77,16 +77,19 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
         <button type="button" onClick={() => setIsCategoryOpen(!isCategoryOpen)} className="flex items-center justify-between w-full text-left py-2 hover:opacity-80 transition-opacity cursor-pointer">
           <span className="text-xs sm:text-sm font-extrabold text-neutral-950">Category</span>
           <div className="flex items-center gap-1 text-[11px] font-bold text-gray-400">
-            <span className="lg:hidden">{selectedCategory}</span>
+            <span className="lg:hidden">
+              {categories.find(c => c._id === selectedCategory || c.name.toLowerCase() === selectedCategory.toLowerCase())?.name || selectedCategory}
+            </span>
             {isCategoryOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </div>
         </button>
         {isCategoryOpen && (
           <div className="flex flex-wrap gap-2 mt-2">
             {categories.map((category) => {
-              const catValue = category.name;
+              const catValue = category._id === 'All' ? 'All' : category._id;
+              const isSelected = selectedCategory === catValue || selectedCategory.toLowerCase() === category.name.toLowerCase();
               return (
-              <button key={category._id || 'all-cat'} onClick={() => setSelectedCategory(catValue)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${selectedCategory === catValue ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
+              <button key={category._id || 'all-cat'} onClick={() => setSelectedCategory(catValue)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${isSelected ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
                 {category.name}
               </button>
             )})}
@@ -98,16 +101,19 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
         <button type="button" onClick={() => setIsBrandOpen(!isBrandOpen)} className="flex items-center justify-between w-full text-left py-2 hover:opacity-80 transition-opacity cursor-pointer">
           <span className="text-xs sm:text-sm font-extrabold text-neutral-950">Brand</span>
           <div className="flex items-center gap-1 text-[11px] font-bold text-gray-400">
-            <span className="lg:hidden">{selectedBrand}</span>
+            <span className="lg:hidden">
+              {brands.find(b => b._id === selectedBrand || b.name.toLowerCase() === selectedBrand.toLowerCase())?.name || selectedBrand}
+            </span>
             {isBrandOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </div>
         </button>
         {isBrandOpen && (
           <div className="flex flex-wrap gap-2 mt-2">
             {brands.map((brand) => {
-              const brandValue = brand.name;
+              const brandValue = brand._id === 'All' ? 'All' : brand._id;
+              const isSelected = selectedBrand === brandValue || selectedBrand.toLowerCase() === brand.name.toLowerCase();
               return (
-              <button key={brand._id || 'all-brand'} onClick={() => setSelectedBrand(brandValue)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${selectedBrand === brandValue ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
+              <button key={brand._id || 'all-brand'} onClick={() => setSelectedBrand(brandValue)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${isSelected ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
                 {brand.name}
               </button>
             )})}

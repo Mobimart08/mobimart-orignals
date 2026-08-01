@@ -37,6 +37,39 @@ const normalizeCondition = (value, fallback = null) => {
   return fallback;
 };
 
+const resolveFilterToIds = async (Model, queryParamValue) => {
+  if (!queryParamValue) return null;
+  const tokens = String(queryParamValue).split(',').map((item) => item.trim()).filter(Boolean);
+  if (tokens.length === 0) return null;
+
+  const objectIds = [];
+  const strings = [];
+
+  tokens.forEach(item => {
+    if (/^[0-9a-fA-F]{24}$/.test(item)) {
+      objectIds.push(item);
+    } else {
+      strings.push(item);
+    }
+  });
+
+  const finalIds = [...objectIds];
+
+  if (strings.length > 0) {
+    const slugs = strings.map((item) => slugify(item));
+    const docs = await Model.find({
+      isActive: true,
+      $or: [
+        { slug: { $in: slugs } },
+        { name: { $in: strings } },
+      ],
+    }, { _id: 1 }).lean();
+    finalIds.push(...docs.map(d => String(d._id)));
+  }
+
+  return finalIds;
+};
+
 const normalizeProductPayload = (payload = {}) => {
   const productCondition = normalizeCondition(
     payload.productCondition || payload.conditionType || payload.condition,
@@ -128,29 +161,13 @@ const buildPublicProductQuery = async (queryParams) => {
   }
 
   if (brand) {
-    const brandTokens = String(brand).split(',').map((item) => item.trim()).filter(Boolean);
-    const brandSlugs = brandTokens.map((item) => slugify(item));
-    const brands = await Brand.find({
-      isActive: true,
-      $or: [
-        { slug: { $in: brandSlugs } },
-        { name: { $in: brandTokens } },
-      ],
-    });
-    mongoQuery.brand = { $in: brands.map((item) => item._id) };
+    const resolvedIds = await resolveFilterToIds(Brand, brand);
+    if (resolvedIds) mongoQuery.brand = { $in: resolvedIds };
   }
 
   if (category) {
-    const categoryTokens = String(category).split(',').map((item) => item.trim()).filter(Boolean);
-    const categorySlugs = categoryTokens.map((item) => slugify(item));
-    const categories = await Category.find({
-      isActive: true,
-      $or: [
-        { slug: { $in: categorySlugs } },
-        { name: { $in: categoryTokens } },
-      ],
-    });
-    mongoQuery.category = { $in: categories.map((item) => item._id) };
+    const resolvedIds = await resolveFilterToIds(Category, category);
+    if (resolvedIds) mongoQuery.category = { $in: resolvedIds };
   }
 
   const resolvedCondition = normalizeCondition(productCondition || condition || conditionType);
