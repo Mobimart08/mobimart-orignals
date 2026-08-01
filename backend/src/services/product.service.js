@@ -68,19 +68,27 @@ const ensureReferencedDocuments = async (payload) => {
   return { brand, category };
 };
 
-const ensureUniqueProductFields = async ({ slug, sku, excludeId = null }) => {
-  if (slug) {
-    const existingSlug = await Product.findOne({ slug, ...(excludeId ? { _id: { $ne: excludeId } } : {}) });
-    if (existingSlug) {
-      throw new ConflictError(`Product slug '${slug}' already exists`);
-    }
-  }
+const ensureUniqueProductFields = async ({ sku, excludeId = null }) => {
 
   if (sku) {
     const existingSku = await Product.findOne({ sku, ...(excludeId ? { _id: { $ne: excludeId } } : {}) });
     if (existingSku) {
       throw new ConflictError(`SKU '${sku}' is already assigned to another product`);
     }
+  }
+};
+
+const generateUniqueSlug = async (baseSlug, excludeId = null) => {
+  if (!baseSlug) return undefined;
+  let currentSlug = baseSlug;
+  let counter = 1;
+  while (true) {
+    const existing = await Product.findOne({ slug: currentSlug, ...(excludeId ? { _id: { $ne: excludeId } } : {}) });
+    if (!existing) {
+      return currentSlug;
+    }
+    currentSlug = `${baseSlug}-${counter}`;
+    counter++;
   }
 };
 
@@ -252,8 +260,8 @@ export const getProductBySlug = async (slug) => {
   return product;
 };
 
-export const getRelatedProducts = async (slug, limit = 4) => {
-  const currentProduct = await Product.findOne({ slug, isActive: true });
+export const getRelatedProducts = async (id, limit = 4) => {
+  const currentProduct = await Product.findById(id);
   if (!currentProduct) throw new NotFoundError('Product not found');
 
   return Product.find({
@@ -271,9 +279,10 @@ export const createProduct = async (productData) => {
   const { brand, category } = await ensureReferencedDocuments(normalizedPayload);
 
   await ensureUniqueProductFields({
-    slug: normalizedPayload.slug,
     sku: normalizedPayload.sku,
   });
+
+  normalizedPayload.slug = await generateUniqueSlug(normalizedPayload.slug);
 
   const product = await Product.create({
     ...normalizedPayload,
@@ -292,10 +301,11 @@ export const updateProduct = async (id, productData) => {
   const normalizedPayload = normalizeProductPayload({ ...product.toObject(), ...productData });
 
   await ensureUniqueProductFields({
-    slug: normalizedPayload.slug,
     sku: normalizedPayload.sku,
     excludeId: id,
   });
+
+  normalizedPayload.slug = await generateUniqueSlug(normalizedPayload.slug, id);
 
   if (productData.brand && productData.brand.toString() !== product.brand.toString()) {
     const brand = await Brand.findById(productData.brand);

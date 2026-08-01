@@ -197,7 +197,7 @@ export const GlobalSearchDrawer = ({ isOpen, onClose }) => {
                   <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-2.5">Popular Brands</h4>
                   <div className="flex flex-wrap gap-2">
                     {popularBrands.map((brand) => (
-                      <button key={brand._id || brand.slug} type="button" onClick={() => handleBrandSelect(brand.slug)} className="px-3.5 py-1.5 bg-white border border-gray-200/70 rounded-full text-xs font-extrabold text-neutral-900 hover:bg-neutral-950 hover:text-white transition-all cursor-pointer shadow-xs">
+                      <button key={brand._id} type="button" onClick={() => handleBrandSelect(brand.name)} className="px-3.5 py-1.5 bg-white border border-gray-200/70 rounded-full text-xs font-extrabold text-neutral-900 hover:bg-neutral-950 hover:text-white transition-all cursor-pointer shadow-xs">
                         {brand.name}
                       </button>
                     ))}

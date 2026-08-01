@@ -6,7 +6,7 @@ const PRODUCT_CONDITIONS = ['All', 'New', 'Used', 'Refurbished', 'Open Box'];
 const AVAILABILITY_OPTIONS = ['All', 'In Stock', 'Out of Stock'];
 
 export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters = {} }) => {
-  const [minPrice, setMinPrice] = useState(currentFilters.minPrice || 10000);
+  const [minPrice, setMinPrice] = useState(currentFilters.minPrice || 0);
   const [maxPrice, setMaxPrice] = useState(currentFilters.maxPrice || 150000);
   const [selectedBrand, setSelectedBrand] = useState(currentFilters.brand || 'All');
   const [selectedCategory, setSelectedCategory] = useState(currentFilters.category || 'All');
@@ -21,7 +21,7 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
   const [isSortOpen, setIsSortOpen] = useState(true);
 
   useEffect(() => {
-    setMinPrice(currentFilters.minPrice || 10000);
+    setMinPrice(currentFilters.minPrice || 0);
     setMaxPrice(currentFilters.maxPrice || 150000);
     setSelectedBrand(currentFilters.brand || 'All');
     setSelectedCategory(currentFilters.category || 'All');
@@ -32,16 +32,16 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
 
   useEffect(() => {
     brandService.getAll().then((res) => {
-      setBrands([{ name: 'All', slug: 'All' }, ...(res.data.data || [])]);
+      setBrands([{ name: 'All', _id: 'All' }, ...(res.data.data || [])]);
     }).catch((err) => console.error(err));
 
     categoryService.getAll().then((res) => {
-      setCategories([{ name: 'All', slug: 'All' }, ...(res.data.data || [])]);
+      setCategories([{ name: 'All', _id: 'All' }, ...(res.data.data || [])]);
     }).catch((err) => console.error(err));
   }, []);
 
   const handleReset = () => {
-    setMinPrice(10000);
+    setMinPrice(0);
     setMaxPrice(150000);
     setSelectedBrand('All');
     setSelectedCategory('All');
@@ -50,7 +50,7 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
     setSelectedSort('Popular');
     // For desktop, auto-apply on reset
     onApplyFilters?.({
-      minPrice: 10000, maxPrice: 150000, brand: 'All', category: 'All',
+      minPrice: 0, maxPrice: 150000, brand: 'All', category: 'All',
       productCondition: 'All', availability: 'All', sort: 'Popular',
     });
   };
@@ -83,11 +83,13 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
         </button>
         {isCategoryOpen && (
           <div className="flex flex-wrap gap-2 mt-2">
-            {categories.map((category) => (
-              <button key={category.slug} onClick={() => setSelectedCategory(category.slug)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${selectedCategory.toLowerCase() === category.slug.toLowerCase() ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
+            {categories.map((category) => {
+              const catValue = category.name;
+              return (
+              <button key={category._id || 'all-cat'} onClick={() => setSelectedCategory(catValue)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${selectedCategory === catValue ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
                 {category.name}
               </button>
-            ))}
+            )})}
           </div>
         )}
       </div>
@@ -102,11 +104,13 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
         </button>
         {isBrandOpen && (
           <div className="flex flex-wrap gap-2 mt-2">
-            {brands.map((brand) => (
-              <button key={brand.slug} onClick={() => setSelectedBrand(brand.slug)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${selectedBrand.toLowerCase() === brand.slug.toLowerCase() ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
+            {brands.map((brand) => {
+              const brandValue = brand.name;
+              return (
+              <button key={brand._id || 'all-brand'} onClick={() => setSelectedBrand(brandValue)} className={`px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg border transition-all cursor-pointer ${selectedBrand === brandValue ? 'border-neutral-900 bg-neutral-950 text-white font-black shadow-sm' : 'border-gray-200 text-neutral-800 bg-white hover:bg-neutral-50 shadow-[0_2px_6px_rgba(0,0,0,0.015)]'}`}>
                 {brand.name}
               </button>
-            ))}
+            )})}
           </div>
         )}
       </div>
@@ -119,11 +123,11 @@ export const FilterDrawer = ({ isOpen, onClose, onApplyFilters, currentFilters =
         </div>
         <div className="relative w-full h-8 flex items-center px-1">
           <div className="absolute left-1.5 right-1.5 h-1 bg-neutral-150 rounded-full z-0 pointer-events-none"></div>
-          <div className="absolute h-1 bg-gold-accent rounded-full z-10 pointer-events-none" style={{ left: `${((minPrice - 10000) / 140000) * 100}%`, right: `${100 - ((maxPrice - 10000) / 140000) * 100}%` }}></div>
-          <input type="range" min="10000" max="150000" step="5000" value={minPrice} onChange={(e) => setMinPrice(Math.min(Number(e.target.value), maxPrice - 10000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
-          <input type="range" min="10000" max="150000" step="5000" value={maxPrice} onChange={(e) => setMaxPrice(Math.max(Number(e.target.value), minPrice + 10000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
-          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${((minPrice - 10000) / 140000) * 100}% - 8px)` }}></div>
-          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${((maxPrice - 10000) / 140000) * 100}% - 8px)` }}></div>
+          <div className="absolute h-1 bg-gold-accent rounded-full z-10 pointer-events-none" style={{ left: `${(minPrice / 150000) * 100}%`, right: `${100 - (maxPrice / 150000) * 100}%` }}></div>
+          <input type="range" min="0" max="150000" step="5000" value={minPrice} onChange={(e) => setMinPrice(Math.min(Number(e.target.value), maxPrice - 5000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
+          <input type="range" min="0" max="150000" step="5000" value={maxPrice} onChange={(e) => setMaxPrice(Math.max(Number(e.target.value), minPrice + 5000))} className="absolute inset-x-0 w-full h-1 opacity-0 z-20 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto" style={{ pointerEvents: 'none' }} />
+          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${(minPrice / 150000) * 100}% - 8px)` }}></div>
+          <div className="absolute w-4 h-4 bg-white border-2 border-gold-accent rounded-full shadow z-15 pointer-events-none" style={{ left: `calc(${(maxPrice / 150000) * 100}% - 8px)` }}></div>
         </div>
       </div>
 

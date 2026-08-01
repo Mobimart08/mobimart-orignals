@@ -44,7 +44,7 @@ export const BrandTabs = ({ activeBrand = 'All', onBrandSelect }) => {
 
   useEffect(() => {
     brandService.getAll().then(res => {
-      setBrands([{ name: 'All', slug: 'All' }, ...(res.data.data || [])]);
+      setBrands([{ name: 'All', _id: 'All' }, ...(res.data.data || [])]);
     }).catch(err => console.error(err));
   }, []);
 
@@ -142,7 +142,7 @@ export const BrandTabs = ({ activeBrand = 'All', onBrandSelect }) => {
   };
 
   const tabsToRender = brands.map(brand => ({
-    id: brand.slug, // use slug for API matching
+    id: brand._id || brand.id, // use _id for API matching
     label: brand.name,
     icon: (isActive) => getIconForBrand(brand.name, isActive)
   }));

@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 import { productsService } from '../../api/services';
 import { useWishlist } from '../../context/WishlistContext';
 
-export const RelatedProducts = ({ slug }) => {
+export const RelatedProducts = ({ id }) => {
   const navigate = useNavigate();
   const { toggleWishlist, isWishlisted } = useWishlist();
   const [related, setRelated] = useState([]);
@@ -12,16 +12,16 @@ export const RelatedProducts = ({ slug }) => {
   useEffect(() => {
     const fetchRelated = async () => {
       try {
-        const res = await productsService.getRelated(slug, 4);
+        const res = await productsService.getRelated(id, 4);
         setRelated(res.data.data || []);
       } catch (err) {
         console.error('Failed to fetch related products', err);
       }
     };
-    if (slug) {
+    if (id) {
       fetchRelated();
     }
-  }, [slug]);
+  }, [id]);
 
   if (!related || related.length === 0) return null;
 

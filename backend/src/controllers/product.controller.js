@@ -41,11 +41,18 @@ export const getProductDetails = asyncHandler(async (req, res) => {
   const { slugOrId } = req.params;
 
   let product;
-  // If the parameter is a valid 24-character hexadecimal MongoDB ID, look up by ID
   const mongoIdRegex = /^[0-9a-fA-F]{24}$/;
+  
   if (mongoIdRegex.test(slugOrId)) {
-    product = await getProductById(slugOrId);
-  } else {
+    try {
+      product = await getProductById(slugOrId);
+    } catch (err) {
+      if (err.statusCode !== 404) throw err;
+    }
+  }
+  
+  if (!product) {
+    // If it wasn't an ID, or ID lookup returned 404, try slug.
     product = await getProductBySlug(slugOrId);
   }
 
@@ -58,11 +65,11 @@ export const getProductDetails = asyncHandler(async (req, res) => {
 });
 
 export const getRelated = asyncHandler(async (req, res) => {
-  const { slug } = req.params;
+  const { id } = req.params;
   const { limit } = req.query;
 
   const parsedLimit = limit ? parseInt(limit, 10) : 4;
-  const products = await getRelatedProducts(slug, parsedLimit);
+  const products = await getRelatedProducts(id, parsedLimit);
 
   ApiResponse.success(
     res,

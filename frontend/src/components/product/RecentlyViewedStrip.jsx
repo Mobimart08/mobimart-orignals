@@ -36,7 +36,7 @@ export const RecentlyViewedStrip = ({ currentId }) => {
               key={prod.id}
               type="button"
               onClick={() => {
-                navigate(`/product/${prod.id}`);
+                navigate(`/product/${prod._id || prod.id}`);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-[#FAF9F6]/40 hover:bg-white border border-gray-150 hover:border-neutral-450 hover:shadow-sm shrink-0 flex items-center justify-center p-2.5 transition-all cursor-pointer relative"

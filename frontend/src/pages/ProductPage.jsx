@@ -198,7 +198,7 @@ export const ProductPage = () => {
             <ProductReviews product={product} />
 
             {/* Related products suggestions grid */}
-            <RelatedProducts slug={product.slug} />
+            <RelatedProducts id={product._id || product.id} />
 
             {/* Horizontal Recently Viewed item slides */}
             <RecentlyViewedStrip currentId={product._id || product.id} />

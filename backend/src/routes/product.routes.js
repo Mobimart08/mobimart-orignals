@@ -25,7 +25,7 @@ const router = Router();
 
 // Public catalog search and read routes
 router.get('/', cacheMiddleware(180), listProducts);
-router.get('/:slug/related', getRelated);
+router.get('/:id/related', getRelated); // Related can stay ID since new links use ID
 router.get('/:slugOrId', getProductDetails);
 
 // Admin-guarded inventory management routes

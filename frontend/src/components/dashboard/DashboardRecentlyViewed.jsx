@@ -40,7 +40,7 @@ export const DashboardRecentlyViewed = React.memo(() => {
               <div 
                 key={prod._id}
                 onClick={() => {
-                  navigate(`/product/${prod.slug || prod._id}`);
+                  navigate(`/product/${prod._id || prod.id}`);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className="w-[125px] sm:w-[145px] bg-white border border-gray-150/40 rounded-2xl p-3 shadow-soft-ui flex flex-col justify-between shrink-0 hover:border-neutral-350 transition-all cursor-pointer text-left active:scale-[0.98]"

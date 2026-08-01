@@ -11,15 +11,6 @@ const productConditionValidator = body('productCondition')
   .isIn(PRODUCT_CONDITIONS)
   .withMessage(`productCondition must be one of: ${PRODUCT_CONDITIONS.join(', ')}`);
 
-const slugValidator = body('slug')
-  .optional({ checkFalsy: true })
-  .isString()
-  .trim()
-  .isLength({ min: 2, max: 160 })
-  .withMessage('Slug must be between 2 and 160 characters')
-  .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
-  .withMessage('Slug must contain only lowercase letters, numbers, and hyphens');
-
 const skuValidator = body('sku')
   .optional({ checkFalsy: true })
   .isString()
@@ -71,7 +62,6 @@ export const createProductValidator = [
     .isLength({ min: 2, max: 150 })
     .withMessage('Name must be between 2 and 150 characters'),
 
-  slugValidator,
   skuValidator,
 
   body('brand')
@@ -133,7 +123,6 @@ export const updateProductValidator = [
     .withMessage('Invalid product ID parameter'),
 
   body('name').optional().isString().trim().isLength({ min: 2, max: 150 }),
-  body('slug').optional().isString().trim().matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   body('sku').optional().isString().trim().isLength({ min: 2, max: 40 }),
   body('brand').optional().isMongoId(),
   body('category').optional().isMongoId(),

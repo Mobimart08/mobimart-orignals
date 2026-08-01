@@ -20,17 +20,6 @@ const BasicInfoSection = ({ data, updateField }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Slug</label>
-          <input
-            type="text"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm placeholder:text-gray-400"
-            placeholder="e.g. apple-iphone-15-pro-max"
-            value={data.slug || ''}
-            onChange={(e) => updateField('slug', e.target.value)}
-          />
-        </div>
-
-        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Long Description</label>
           <textarea
             rows={8}

@@ -62,9 +62,9 @@ export const productsService = {
     const key = `products_id_${id}`;
     return fetchWithCache(key, (config) => apiClient.get(`/products/${id}`, config), options);
   },
-  getRelated: (slug, limit = 4, options) => {
-    const key = `products_related_${slug}_${limit}`;
-    return fetchWithCache(key, (config) => apiClient.get(`/products/${slug}/related`, { params: { limit }, ...config }), options);
+  getRelated: (id, limit = 4, options) => {
+    const key = `products_related_${id}_${limit}`;
+    return fetchWithCache(key, (config) => apiClient.get(`/products/${id}/related`, { params: { limit }, ...config }), options);
   },
   create: async (data) => {
     const res = await apiClient.post('/products', data);

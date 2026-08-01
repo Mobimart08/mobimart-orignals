@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, Save, Eye } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { productsService, uploadService } from '../../api/services';
+import { parseApiError } from '../../utils/errorHandler';
 
 // Components
 import BasicInfoSection from './components/product/BasicInfoSection';
@@ -25,7 +26,6 @@ const AdminAddProduct = () => {
   // Main Form State
   const [formData, setFormData] = useState({
     name: '',
-    slug: '',
     description: '',
     brand: '',
     category: '',
@@ -129,16 +129,33 @@ const AdminAddProduct = () => {
       if (forceStatus) {
         payload.status = forceStatus;
       }
-      if (!payload.slug) {
-        delete payload.slug;
-      }
-      
       // Basic Validation
-      if (!payload.name || !payload.brand || !payload.category || payload.price <= 0) {
-        showToast('Please fill all required fields (Name, Brand, Category, Price)', 'error');
+      if (!payload.name) {
+        showToast('Product name is required', 'error');
         setSaving(false);
         return;
       }
+      if (!payload.brand) {
+        showToast('Please select a brand', 'error');
+        setSaving(false);
+        return;
+      }
+      if (!payload.category) {
+        showToast('Please select a category', 'error');
+        setSaving(false);
+        return;
+      }
+      if (payload.price <= 0) {
+        showToast('Price must be greater than 0', 'error');
+        setSaving(false);
+        return;
+      }
+      if (payload.stock < 0) {
+        showToast('Stock cannot be negative', 'error');
+        setSaving(false);
+        return;
+      }
+
       if (!payload.description || payload.description.trim().length < 20) {
         showToast('Description must be at least 20 characters long', 'error');
         setSaving(false);
@@ -180,7 +197,7 @@ const AdminAddProduct = () => {
         }
       }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Error saving product', 'error');
+      showToast(parseApiError(error), 'error');
     } finally {
       setSaving(false);
     }
