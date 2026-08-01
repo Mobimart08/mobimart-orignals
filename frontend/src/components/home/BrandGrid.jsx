@@ -29,9 +29,11 @@ export const BrandGrid = () => {
       bgClass: 'bg-[#F4F4F6]',
       textClass: 'text-neutral-900',
       logo: (
-        <svg viewBox="0 0 384 512" className="w-5 h-5 sm:w-8 sm:h-8 fill-current text-neutral-950 opacity-95 select-none" aria-label="Apple logo">
-          <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 53.3 11.7 109.2c23.2 61 52.2 95 86.2 93.3 32.5-1.9 45.8-22.4 81.8-22.4 35.2 0 47.1 22.4 83.2 21.9 38.3-.3 65.6-36.2 87.2-76 25-45 31.7-89.8 32-92.4-1.7-1.1-42.6-17.7-42.4-65.2zM224 71.3c21.5-24.7 34.6-58.4 31.2-91.3-26.8 2.2-61.9 20.4-82.7 45.1-18.7 21.9-33.1 56-29 88.6 29.7 1.9 61.1-18.4 80.5-42.4z"/>
-        </svg>
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" 
+          alt="Apple logo" 
+          className="w-6 h-6 sm:w-9 sm:h-9 opacity-95 select-none object-contain" 
+        />
       ),
       image: brandAppleIphone,
       imageClass: 'scale-90 md:scale-100 origin-bottom-right',
