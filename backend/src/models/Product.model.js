@@ -157,6 +157,11 @@ const productSchema = new mongoose.Schema(
       default: [],
     },
 
+    ram: {
+      type: [String],
+      default: [],
+    },
+
     stock: {
       type: Number,
       required: [true, 'Stock count is required'],

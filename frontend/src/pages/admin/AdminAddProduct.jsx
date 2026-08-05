@@ -10,6 +10,7 @@ import BasicInfoSection from './components/product/BasicInfoSection';
 import BrandCategorySection from './components/product/BrandCategorySection';
 import PricingSection from './components/product/PricingSection';
 import InventorySection from './components/product/InventorySection';
+import ProductSpecsSection from './components/product/ProductSpecsSection';
 import ImageManager from '../../components/admin/ImageManager';
 import ProductSidebar from './components/product/ProductSidebar';
 
@@ -37,6 +38,9 @@ const AdminAddProduct = () => {
     images: [],
     status: 'Draft',
     visibility: [],
+    storageOptions: [],
+    colorOptions: [],
+    ram: [],
   });
 
   // Track original images to handle deletion after save
@@ -267,6 +271,7 @@ const AdminAddProduct = () => {
               <ImageManager images={formData.images} setFormData={setFormData} maxImages={5} />
             </div>
             <PricingSection data={formData} updateField={updateField} />
+            <ProductSpecsSection data={formData} updateField={updateField} />
             <InventorySection data={formData} updateField={updateField} />
           </div>
 

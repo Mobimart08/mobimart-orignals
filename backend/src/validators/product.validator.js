@@ -121,6 +121,45 @@ export const createProductValidator = [
     .optional()
     .isBoolean(),
 
+  body('storageOptions')
+    .optional()
+    .isArray()
+    .withMessage('storageOptions must be an array of strings'),
+
+  body('storageOptions.*')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Each storage option must be a string'),
+
+  body('colorOptions')
+    .optional()
+    .isArray()
+    .withMessage('colorOptions must be an array of objects with a name field'),
+
+  body('colorOptions.*.name')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Color name must be a string'),
+
+  body('colorOptions.*.hexValue')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Color hexValue must be a string'),
+
+  body('ram')
+    .optional()
+    .isArray()
+    .withMessage('RAM must be an array of strings'),
+
+  body('ram.*')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Each RAM option must be a string'),
+
   validateMiddleware,
 ];
 
@@ -141,6 +180,21 @@ export const updateProductValidator = [
   body('stock').optional().isInt({ min: 0 }),
   body('isActive').optional().isBoolean(),
   body('isFeatured').optional().isBoolean(),
+
+  body('storageOptions')
+    .optional()
+    .isArray()
+    .withMessage('storageOptions must be an array of strings'),
+
+  body('colorOptions')
+    .optional()
+    .isArray()
+    .withMessage('colorOptions must be an array of objects with a name field'),
+
+  body('ram')
+    .optional()
+    .isArray()
+    .withMessage('RAM must be an array of strings'),
 
   validateMiddleware,
 ];

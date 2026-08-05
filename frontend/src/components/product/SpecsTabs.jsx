@@ -70,6 +70,37 @@ export const SpecsTabs = ({ product }) => {
         {activeTab === 'Specs' && (
           <div className="flex flex-col gap-4 animate-fade-in text-left">
             <h4 className="text-[12.5px] font-extrabold text-neutral-950 uppercase tracking-wider">Key Specifications</h4>
+
+            {/* colorOptions, storageOptions, ram — conditionally rendered only if populated */}
+            {(product.colorOptions?.length > 0 || product.storageOptions?.length > 0 || product.ram?.length > 0) && (
+              <div className="flex flex-col gap-2.5">
+                {product.colorOptions?.length > 0 && (
+                  <div className="flex items-center gap-2 bg-[#FAF9F6] px-4 py-3 rounded-2xl border border-neutral-100">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider w-16 shrink-0">Color</span>
+                    <span className="text-[11px] sm:text-xs font-extrabold text-neutral-900">
+                      {product.colorOptions.map((c) => c.name).join(' • ')}
+                    </span>
+                  </div>
+                )}
+                {product.storageOptions?.length > 0 && (
+                  <div className="flex items-center gap-2 bg-[#FAF9F6] px-4 py-3 rounded-2xl border border-neutral-100">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider w-16 shrink-0">Storage</span>
+                    <span className="text-[11px] sm:text-xs font-extrabold text-neutral-900">
+                      {product.storageOptions.join(' • ')}
+                    </span>
+                  </div>
+                )}
+                {product.ram?.length > 0 && (
+                  <div className="flex items-center gap-2 bg-[#FAF9F6] px-4 py-3 rounded-2xl border border-neutral-100">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider w-16 shrink-0">RAM</span>
+                    <span className="text-[11px] sm:text-xs font-extrabold text-neutral-900">
+                      {product.ram.join(' • ')}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {product.specifications && product.specifications.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {product.specifications.map((spec, idx) => (
@@ -85,10 +116,14 @@ export const SpecsTabs = ({ product }) => {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400 font-bold py-6">No detailed specs mapped.</p>
+              !product.colorOptions?.length && !product.storageOptions?.length && !product.ram?.length && (
+                <p className="text-xs text-gray-400 font-bold py-6">No detailed specs mapped.</p>
+              )
             )}
           </div>
         )}
+
+
 
         {activeTab === 'Inspection' && (
           <div className="flex flex-col gap-4 animate-fade-in text-left">
