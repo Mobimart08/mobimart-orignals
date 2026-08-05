@@ -253,7 +253,15 @@ const buildAdminProductQuery = async (queryParams) => {
   }
 
   if (status === 'draft') {
-    mongoQuery.isActive = false;
+    mongoQuery.status = 'Draft';
+  }
+
+  if (status === 'archived') {
+    mongoQuery.status = 'Archived';
+  }
+
+  if (status === 'hidden') {
+    mongoQuery.status = 'Hidden';
   }
 
   if (minPrice !== undefined || maxPrice !== undefined) {

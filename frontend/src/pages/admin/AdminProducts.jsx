@@ -16,6 +16,7 @@ const STATUS_FILTERS = [
   { value: '', label: 'All Status' },
   { value: 'published', label: 'Published' },
   { value: 'draft', label: 'Draft' },
+  { value: 'archived', label: 'Archived' },
 ];
 
 const emptyBrandForm = {
@@ -191,7 +192,7 @@ const AdminProducts = () => {
     productCondition: product.productCondition || product.conditionType || 'New',
     price: typeof product.price === 'number' ? `₹ ${product.price.toLocaleString('en-IN')}` : product.price,
     stock: product.stock ?? 0,
-    status: product.isActive ? 'Published' : 'Draft',
+    status: product.status || (product.isActive ? 'Published' : 'Draft'),
     originalData: product,
   }));
 
@@ -222,15 +223,20 @@ const AdminProducts = () => {
       ),
     },
     {
-      header: 'Published',
+      header: 'Status',
       accessor: 'status',
-      render: (status) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-          status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-neutral-200 text-neutral-700'
-        }`}>
-          {status}
-        </span>
-      ),
+      render: (status) => {
+        let bgColor = 'bg-neutral-200 text-neutral-700';
+        if (status === 'Published') bgColor = 'bg-green-100 text-green-700';
+        if (status === 'Archived') bgColor = 'bg-amber-100 text-amber-700';
+        if (status === 'Hidden') bgColor = 'bg-gray-100 text-gray-700';
+        
+        return (
+          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${bgColor}`}>
+            {status}
+          </span>
+        );
+      },
     },
   ];
 
