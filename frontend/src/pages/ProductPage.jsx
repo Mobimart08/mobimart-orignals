@@ -10,6 +10,7 @@ import ProductGallery from '../components/product/ProductGallery';
 import ProductInfo from '../components/product/ProductInfo';
 import StorageSelector from '../components/product/StorageSelector';
 import ColorSelector from '../components/product/ColorSelector';
+import RamSelector from '../components/product/RamSelector';
 import BatteryHealthCard from '../components/product/BatteryHealthCard';
 import DeliveryChecker from '../components/product/DeliveryChecker';
 import SpecsTabs from '../components/product/SpecsTabs';
@@ -39,6 +40,7 @@ export const ProductPage = () => {
   // State controls for interactive attributes
   const [selectedStorage, setSelectedStorage] = useState('');
   const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedRam, setSelectedRam] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -50,12 +52,15 @@ export const ProductPage = () => {
         
         addView(fetchedProduct);
 
-        // Default to first option
+        // Default to first option for each selector
         if (fetchedProduct.storageOptions && fetchedProduct.storageOptions.length > 0) {
           setSelectedStorage(fetchedProduct.storageOptions[0]);
         }
         if (fetchedProduct.colorOptions && fetchedProduct.colorOptions.length > 0) {
           setSelectedColor(fetchedProduct.colorOptions[0]);
+        }
+        if (fetchedProduct.ram && fetchedProduct.ram.length > 0) {
+          setSelectedRam(fetchedProduct.ram[0]);
         }
       } catch (err) {
         console.error('Failed to fetch product', err);
@@ -159,7 +164,16 @@ export const ProductPage = () => {
             {/* Header info card */}
             <ProductInfo product={product} />
 
-            {/* Storage selector chips */}
+            {/* Color selector circles — shown only if product has colorOptions */}
+            {product.colorOptions && product.colorOptions.length > 0 && (
+              <ColorSelector
+                options={product.colorOptions}
+                selected={selectedColor}
+                onChange={setSelectedColor}
+              />
+            )}
+
+            {/* Storage selector chips — shown only if product has storageOptions */}
             {product.storageOptions && product.storageOptions.length > 0 && (
               <StorageSelector
                 options={product.storageOptions}
@@ -168,12 +182,12 @@ export const ProductPage = () => {
               />
             )}
 
-            {/* Color selector circles */}
-            {product.colorOptions && product.colorOptions.length > 0 && (
-              <ColorSelector
-                options={product.colorOptions}
-                selected={selectedColor}
-                onChange={setSelectedColor}
+            {/* RAM selector chips — shown only if product has ram */}
+            {product.ram && product.ram.length > 0 && (
+              <RamSelector
+                options={product.ram}
+                selected={selectedRam}
+                onChange={setSelectedRam}
               />
             )}
 
@@ -212,7 +226,8 @@ export const ProductPage = () => {
       <StickyCTA 
         product={product} 
         selectedStorage={selectedStorage} 
-        selectedColor={selectedColor} 
+        selectedColor={selectedColor}
+        selectedRam={selectedRam}
       />
     </MainLayout>
   );

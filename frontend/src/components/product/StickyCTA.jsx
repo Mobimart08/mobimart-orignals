@@ -10,7 +10,7 @@ import { useCart } from '../../context/CartContext';
    - "Buy Now" -> adds item to cart & navigates to /checkout
    ========================================================================== */
 
-export const StickyCTA = ({ product, selectedStorage, selectedColor }) => {
+export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [toast, setToast] = useState(null);
@@ -26,21 +26,26 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor }) => {
   }, []);
 
   const resolveVariants = () => {
-    const storage = selectedStorage || (product.storageOptions?.[0] ?? '128GB');
-    const colorObj  = selectedColor  || (product.colorOptions?.[0]  ?? null);
-    const colorName = colorObj?.name ?? 'Default';
-    return { storage, colorName };
+    const storage  = selectedStorage || (product.storageOptions?.[0] ?? null);
+    const colorObj = selectedColor   || (product.colorOptions?.[0]  ?? null);
+    const colorName = colorObj?.name ?? null;
+    const ram      = selectedRam     || (product.ram?.[0]           ?? null);
+    return { storage, colorName, ram };
   };
 
   const handleAddToCart = () => {
-    const { storage, colorName } = resolveVariants();
-    addToCart(product, storage, colorName, 1);
-    showToast('cart', `${product.name} · ${storage} · ${colorName} added to cart`);
+    const { storage, colorName, ram } = resolveVariants();
+    addToCart(product, storage, colorName, 1, ram);
+    const parts = [product.name];
+    if (storage) parts.push(storage);
+    if (colorName) parts.push(colorName);
+    if (ram) parts.push(ram);
+    showToast('cart', `${parts.join(' · ')} added to cart`);
   };
 
   const handleBuyNow = () => {
-    const { storage, colorName } = resolveVariants();
-    addToCart(product, storage, colorName, 1);
+    const { storage, colorName, ram } = resolveVariants();
+    addToCart(product, storage, colorName, 1, ram);
     navigate('/checkout');
   };
 
@@ -70,7 +75,11 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor }) => {
 
             <div className="flex flex-col text-left">
               <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">
-                {selectedStorage || product.storageOptions?.[0] || ''} · {selectedColor?.name || product.colorOptions?.[0]?.name || 'Default'}
+                {[
+                  selectedColor?.name || product.colorOptions?.[0]?.name || null,
+                  selectedStorage     || product.storageOptions?.[0]     || null,
+                  selectedRam         || product.ram?.[0]                || null,
+                ].filter(Boolean).join(' · ') || 'Select options'}
               </span>
               <span className="text-base sm:text-lg font-black text-neutral-950 leading-none">
               ₹{typeof product.price === 'number' ? product.price.toLocaleString('en-IN') : product.price}

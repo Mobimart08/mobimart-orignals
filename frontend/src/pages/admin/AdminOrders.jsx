@@ -214,7 +214,7 @@ const AdminOrders = () => {
                         <div className="text-xs text-neutral-500">{item.brandName || 'Brand'} • {item.categoryName || 'Category'} • {item.productCondition || 'Condition N/A'}</div>
                       </div>
                       <div className="text-right text-xs text-neutral-500">
-                        <div>{item.selectedStorage} • {item.selectedColor}</div>
+                        <div>{[item.selectedStorage, item.selectedColor, item.selectedRam].filter(Boolean).join(' • ')}</div>
                         <div>Qty {item.quantity}</div>
                       </div>
                     </div>

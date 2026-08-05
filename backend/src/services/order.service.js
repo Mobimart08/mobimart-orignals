@@ -76,6 +76,13 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
         }
       }
 
+      if (product.ram && product.ram.length > 0) {
+        const hasRam = product.ram.includes(cartItem.selectedRam);
+        if (!hasRam) {
+          throw new ApiError(400, `Selected RAM variant for ${product.name} is unavailable`);
+        }
+      }
+
       // Atomically check and decrement stock to prevent race conditions / overselling
       const updatedProduct = await Product.findOneAndUpdate(
         { _id: product._id, stock: { $gte: cartItem.quantity } },
@@ -110,6 +117,7 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
         productCondition: product.productCondition || product.conditionType || null,
         selectedStorage: cartItem.selectedStorage,
         selectedColor: cartItem.selectedColor,
+        selectedRam: cartItem.selectedRam || null,
         priceAtPurchase,
         quantity: cartItem.quantity,
       });

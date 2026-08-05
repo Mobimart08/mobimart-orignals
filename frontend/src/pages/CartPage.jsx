@@ -193,7 +193,7 @@ export const CartPage = () => {
                                 <span className="text-[10px] text-gray-500">This item is no longer available and was removed from catalog.</span>
                               </div>
                               <button
-                                onClick={() => removeFromCart(null, item.selectedStorage, item.selectedColor, item._id)}
+                                onClick={() => removeFromCart(null, item.selectedStorage, item.selectedColor, item.selectedRam, item._id)}
                                 className="px-3 py-1.5 bg-white border border-red-200 text-red-600 text-[10px] font-bold rounded-lg hover:bg-red-50 transition-colors"
                               >
                                 Remove
@@ -204,7 +204,7 @@ export const CartPage = () => {
 
                         return (
                           <CartItemCard
-                            key={`${prod.id || prod._id}-${item.selectedStorage}-${item.selectedColor}`}
+                            key={`${prod.id || prod._id}-${item.selectedStorage}-${item.selectedColor}-${item.selectedRam}`}
                             item={{ ...item, product: prod }}
                             onUpdateQuantity={updateQuantity}
                             onRemove={removeFromCart}

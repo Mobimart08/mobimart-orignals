@@ -11,13 +11,13 @@ import { useWishlist } from '../../context/WishlistContext';
 
 const CartItemCardComponent = ({ item, onUpdateQuantity, onRemove }) => {
   const { toggleWishlist, isWishlisted } = useWishlist();
-  const { product, selectedStorage, selectedColor, quantity } = item;
+  const { product, selectedStorage, selectedColor, selectedRam, quantity } = item;
 
   const liked = isWishlisted(product.id || product._id);
 
   const handleMoveToWishlist = () => {
     toggleWishlist(product);
-    onRemove(product.id || product._id, selectedStorage, selectedColor);
+    onRemove(product.id || product._id, selectedStorage, selectedColor, selectedRam);
   };
 
   return (
@@ -52,7 +52,7 @@ const CartItemCardComponent = ({ item, onUpdateQuantity, onRemove }) => {
 
         {/* Variant summary list */}
         <p className="text-[9.5px] sm:text-[10.5px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-          {selectedStorage} • {selectedColor}
+          {[selectedStorage, selectedColor, selectedRam].filter(Boolean).join(' • ')}
         </p>
 
         {/* Pricing Row */}
@@ -78,7 +78,7 @@ const CartItemCardComponent = ({ item, onUpdateQuantity, onRemove }) => {
           {/* Quantity Stepper selector */}
           <QuantitySelector 
             value={quantity}
-            onChange={(newVal) => onUpdateQuantity(product.id || product._id, selectedStorage, selectedColor, newVal)}
+            onChange={(newVal) => onUpdateQuantity(product.id || product._id, selectedStorage, selectedColor, selectedRam, newVal)}
           />
 
           {/* Quick operations */}
@@ -95,7 +95,7 @@ const CartItemCardComponent = ({ item, onUpdateQuantity, onRemove }) => {
             {/* Trash Bin */}
             <button
               type="button"
-              onClick={() => onRemove(product.id || product._id, selectedStorage, selectedColor)}
+              onClick={() => onRemove(product.id || product._id, selectedStorage, selectedColor, selectedRam)}
               className="p-1.5 hover:bg-neutral-100 hover:text-red-500 rounded-full transition-all cursor-pointer"
               title="Remove Item"
             >
@@ -169,12 +169,12 @@ export const QuantitySelector = ({ value = 1, onChange }) => {
   );
 };
 
-// Custom comparison function for React.memo
 const areEqual = (prevProps, nextProps) => {
   return (
     prevProps.item.quantity === nextProps.item.quantity &&
     prevProps.item.selectedStorage === nextProps.item.selectedStorage &&
     prevProps.item.selectedColor === nextProps.item.selectedColor &&
+    prevProps.item.selectedRam === nextProps.item.selectedRam &&
     (prevProps.item.product?._id === nextProps.item.product?._id || prevProps.item.product?.id === nextProps.item.product?.id)
   );
 };

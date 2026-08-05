@@ -98,22 +98,24 @@ export const CartProvider = ({ children }) => {
     }
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const addToCart = useCallback(async (product, selectedStorage, selectedColor, quantity = 1) => {
+  const addToCart = useCallback(async (product, selectedStorage, selectedColor, quantity = 1, selectedRam = null) => {
     const productId = product._id || product.id;
     const storage = selectedStorage || 'Default';
     const color = selectedColor || 'Default';
+    const ram = selectedRam || null;
     
     if (!user) {
       const items = getGuestCart();
       const idx = items.findIndex(i => 
         i.productId === productId && 
         i.selectedStorage === storage && 
-        i.selectedColor === color
+        i.selectedColor === color &&
+        (i.selectedRam || null) === ram
       );
       if (idx > -1) {
         items[idx].quantity += quantity;
       } else {
-        items.push({ productId, product, selectedStorage: storage, selectedColor: color, quantity });
+        items.push({ productId, product, selectedStorage: storage, selectedColor: color, selectedRam: ram, quantity });
       }
       saveGuestCart(items);
       return;
@@ -125,18 +127,18 @@ export const CartProvider = ({ children }) => {
     const optimisticItems = [...prevItems];
     const idx = optimisticItems.findIndex(i => {
       const p = i.product || i.productId;
-      return p && (p._id === productId || p.id === productId) && i.selectedStorage === storage && i.selectedColor === color;
+      return p && (p._id === productId || p.id === productId) && i.selectedStorage === storage && i.selectedColor === color && (i.selectedRam || null) === ram;
     });
     
     if (idx > -1) {
       optimisticItems[idx] = { ...optimisticItems[idx], quantity: optimisticItems[idx].quantity + quantity };
     } else {
-      optimisticItems.push({ productId: product, selectedStorage: storage, selectedColor: color, quantity });
+      optimisticItems.push({ productId: product, selectedStorage: storage, selectedColor: color, selectedRam: ram, quantity });
     }
     calculateTotals(optimisticItems);
     
     try {
-      const res = await cartService.addItem({ productId, quantity, selectedStorage: storage, selectedColor: color });
+      const res = await cartService.addItem({ productId, quantity, selectedStorage: storage, selectedColor: color, selectedRam: ram });
       applyServerCart(res.data.data);
     } catch (err) {
       // Revert
@@ -147,11 +149,11 @@ export const CartProvider = ({ children }) => {
     }
   }, [user, getGuestCart, saveGuestCart, calculateTotals, applyServerCart, showToast]);
 
-  const removeFromCart = useCallback(async (productId, selectedStorage, selectedColor, cartItemId = null) => {
+  const removeFromCart = useCallback(async (productId, selectedStorage, selectedColor, selectedRam = null, cartItemId = null) => {
     if (!user) {
       const items = getGuestCart().filter(i => 
         (cartItemId && i._id !== cartItemId) &&
-        !(i.productId === productId && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor)
+        !(i.productId === productId && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor && (i.selectedRam || null) === selectedRam)
       );
       saveGuestCart(items);
       return;
@@ -161,7 +163,7 @@ export const CartProvider = ({ children }) => {
     const itemToRemove = prevItems.find(i => {
       if (cartItemId && i._id === cartItemId) return true;
       const p = i.product || i.productId;
-      return p && (p._id === productId || p.id === productId) && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor;
+      return p && (p._id === productId || p.id === productId) && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor && (i.selectedRam || null) === selectedRam;
     });
 
     if (!itemToRemove) return;
@@ -181,15 +183,15 @@ export const CartProvider = ({ children }) => {
     }
   }, [user, getGuestCart, saveGuestCart, calculateTotals, applyServerCart, showToast]);
 
-  const updateQuantity = useCallback(async (productId, selectedStorage, selectedColor, quantity) => {
+  const updateQuantity = useCallback(async (productId, selectedStorage, selectedColor, selectedRam = null, quantity) => {
     if (quantity <= 0) {
-      return removeFromCart(productId, selectedStorage, selectedColor);
+      return removeFromCart(productId, selectedStorage, selectedColor, selectedRam);
     }
     
     if (!user) {
       const items = getGuestCart();
       const idx = items.findIndex(i => 
-        i.productId === productId && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor
+        i.productId === productId && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor && (i.selectedRam || null) === selectedRam
       );
       if (idx > -1) {
         items[idx].quantity = quantity;
@@ -201,7 +203,7 @@ export const CartProvider = ({ children }) => {
     const { items: prevItems, totals: prevTotals } = stateRef.current;
     const itemToUpdate = prevItems.find(i => {
       const p = i.product || i.productId;
-      return p && (p._id === productId || p.id === productId) && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor;
+      return p && (p._id === productId || p.id === productId) && i.selectedStorage === selectedStorage && i.selectedColor === selectedColor && (i.selectedRam || null) === selectedRam;
     });
 
     if (!itemToUpdate) return;
@@ -213,6 +215,8 @@ export const CartProvider = ({ children }) => {
     calculateTotals(optimisticItems);
 
     try {
+      // The API doesn't have an update quantity endpoint that searches by variant.
+      // Assuming itemToUpdate._id is the server cart item ID.
       const res = await cartService.updateItem(itemToUpdate._id, quantity);
       applyServerCart(res.data.data);
     } catch (err) {

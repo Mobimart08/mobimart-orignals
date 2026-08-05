@@ -59,10 +59,10 @@ const getOrCreateCartDoc = async (userId) => {
 /**
  * Adds an item to the user's cart.
  */
-export const addItemToCart = async (userId, { productId, selectedStorage, selectedColor, quantity = 1 }) => {
+export const addItemToCart = async (userId, { productId, selectedStorage, selectedColor, selectedRam, quantity = 1 }) => {
   // 1. Verify product exists, is active, and has stock using lean()
   const product = await Product.findOne({ _id: productId, isActive: true })
-    .select('stock storageOptions colorOptions')
+    .select('stock storageOptions colorOptions ram')
     .lean();
     
   if (!product) {
@@ -87,6 +87,12 @@ export const addItemToCart = async (userId, { productId, selectedStorage, select
     }
   }
 
+  if (product.ram && product.ram.length > 0) {
+    if (!product.ram.includes(selectedRam)) {
+      throw new BadRequestError(`Invalid RAM variant '${selectedRam}' chosen`);
+    }
+  }
+
   const cart = await getOrCreateCartDoc(userId);
 
   // 2. Check if exact variant is already in the cart
@@ -94,7 +100,8 @@ export const addItemToCart = async (userId, { productId, selectedStorage, select
     (item) =>
       item.productId.toString() === productId.toString() &&
       item.selectedStorage === selectedStorage &&
-      item.selectedColor === selectedColor
+      item.selectedColor === selectedColor &&
+      (item.selectedRam || null) === (selectedRam || null)
   );
 
   if (itemIndex > -1) {
@@ -110,7 +117,7 @@ export const addItemToCart = async (userId, { productId, selectedStorage, select
     if (cart.items.length >= 20) {
       throw new BadRequestError('Cart cannot exceed 20 unique items');
     }
-    cart.items.push({ productId, selectedStorage, selectedColor, quantity });
+    cart.items.push({ productId, selectedStorage, selectedColor, selectedRam: selectedRam || null, quantity });
   }
 
   await cart.save();
@@ -202,7 +209,7 @@ export const mergeGuestCart = async (userId, guestItems = []) => {
   }, {});
 
   for (const guestItem of guestItems) {
-    const { productId, selectedStorage, selectedColor, quantity = 1 } = guestItem;
+    const { productId, selectedStorage, selectedColor, selectedRam, quantity = 1 } = guestItem;
 
     const product = productMap[productId.toString()];
     if (!product || product.stock <= 0) {
@@ -214,7 +221,8 @@ export const mergeGuestCart = async (userId, guestItems = []) => {
       (item) =>
         item.productId.toString() === productId.toString() &&
         item.selectedStorage === selectedStorage &&
-        item.selectedColor === selectedColor
+        item.selectedColor === selectedColor &&
+        (item.selectedRam || null) === (selectedRam || null)
     );
 
     if (itemIndex > -1) {
@@ -223,7 +231,7 @@ export const mergeGuestCart = async (userId, guestItems = []) => {
     } else {
       if (cart.items.length < 20) {
         const initialQty = Math.min(10, product.stock, quantity);
-        cart.items.push({ productId, selectedStorage, selectedColor, quantity: initialQty });
+        cart.items.push({ productId, selectedStorage, selectedColor, selectedRam: selectedRam || null, quantity: initialQty });
       } else {
         skippedItems.push(guestItem);
       }

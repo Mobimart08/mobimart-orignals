@@ -7,7 +7,7 @@ import React from 'react';
    ========================================================================== */
 
 export const CompactOrderCard = ({ item }) => {
-  const { product, selectedStorage, selectedColor, quantity } = item;
+  const { product, selectedStorage, selectedColor, selectedRam, quantity } = item;
 
   return (
     <div className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
@@ -25,7 +25,7 @@ export const CompactOrderCard = ({ item }) => {
         <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider leading-none">{product.brand?.name || product.brand}</span>
         <h4 className="text-xs font-extrabold text-neutral-950 truncate leading-tight">{product.name}</h4>
         <span className="text-[9.5px] font-semibold text-gray-400 uppercase tracking-wide">
-          {selectedStorage} · {selectedColor} · Qty {quantity}
+          {[selectedStorage, selectedColor, selectedRam].filter(Boolean).join(' · ')} · Qty {quantity}
         </span>
       </div>
 

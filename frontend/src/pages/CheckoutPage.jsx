@@ -297,7 +297,7 @@ export const CheckoutPage = () => {
                 if (!prod) return null; // Safeguard against deleted products in cart
                 return (
                   <CompactOrderCard
-                    key={`${prod._id || prod.id}-${item.selectedStorage}-${item.selectedColor}`}
+                    key={`${prod._id || prod.id}-${item.selectedStorage}-${item.selectedColor}-${item.selectedRam}`}
                     item={{ ...item, product: prod }}
                   />
                 );

@@ -25,6 +25,12 @@ const cartItemSchema = new mongoose.Schema({
     trim: true,
   },
 
+  selectedRam: {
+    type: String,
+    default: null,
+    trim: true,
+  },
+
   quantity: {
     type: Number,
     required: [true, 'Quantity is required'],

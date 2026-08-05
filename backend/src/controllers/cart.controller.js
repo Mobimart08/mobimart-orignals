@@ -31,11 +31,12 @@ export const getMyCart = asyncHandler(async (req, res) => {
 
 export const addCartItem = asyncHandler(async (req, res) => {
   const start = performance.now();
-  const { productId, selectedStorage, selectedColor, quantity } = req.body;
+  const { productId, selectedStorage, selectedColor, selectedRam, quantity } = req.body;
   const cart = await addItemToCart(req.user._id, {
     productId,
     selectedStorage,
     selectedColor,
+    selectedRam,
     quantity,
   });
   const duration = performance.now() - start;
