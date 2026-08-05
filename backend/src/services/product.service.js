@@ -383,8 +383,8 @@ export const deleteProduct = async (id) => {
   const product = await Product.findById(id);
   if (!product) throw new NotFoundError('Product not found');
 
-  if (product.status === 'Draft') {
-    // If it's a Draft, perform a hard delete
+  if (product.status === 'Draft' || product.status === 'Archived') {
+    // If it's a Draft or already Archived, perform a hard delete
     await Product.findByIdAndDelete(id);
   } else {
     // If it's not a Draft (e.g. Published, Archived, Hidden), soft-delete it
