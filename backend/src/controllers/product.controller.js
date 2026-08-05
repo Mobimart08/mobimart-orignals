@@ -20,6 +20,14 @@ import { clearCacheMatch } from '../middlewares/cache.middleware.js';
 export const listProducts = asyncHandler(async (req, res) => {
   const result = await queryProducts(req.query);
 
+  console.log('=== BACKEND PAGINATION LOG ===');
+  console.log('req.query.page:', req.query.page);
+  console.log('req.query.limit:', req.query.limit);
+  console.log('Returned products count:', result.data.length);
+  console.log('Total Count:', result.pagination?.totalCount);
+  console.log('Total Pages:', result.pagination?.totalPages);
+  console.log('==============================');
+
   if (result.type === 'offset') {
     ApiResponse.paginated(
       res,

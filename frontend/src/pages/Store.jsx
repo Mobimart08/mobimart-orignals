@@ -59,6 +59,20 @@ export const Store = () => {
         else queryParams.sort = 'popularity';
 
         const res = await productsService.getAll(queryParams);
+        
+        console.log('========================');
+        console.log('Store.jsx Fetch');
+        console.log('========================');
+        console.log('Current Page:', page);
+        console.log('Current Limit:', queryParams.limit);
+        console.log('API URL:', '/api/v1/products?' + new URLSearchParams(queryParams).toString());
+        console.log('Response:');
+        console.log('products.length:', res.data.data?.length || 0);
+        console.log('pagination.currentPage:', res.data.pagination?.currentPage);
+        console.log('pagination.totalPages:', res.data.pagination?.totalPages);
+        console.log('pagination.totalCount:', res.data.pagination?.totalCount);
+        console.log('========================');
+
         setBackendProducts(res.data.data || []);
         setPagination(res.data.pagination || null);
       } catch (err) {
@@ -154,12 +168,27 @@ export const Store = () => {
             </div>
           ) : (
             <>
+              {console.log('========================')}
+              {console.log('Pagination Component')}
+              {console.log('========================')}
+              {console.log('pagination state:', pagination)}
+              {console.log('page state:', page)}
+              {console.log('render condition (pagination && pagination.totalPages > 1):', !!(pagination && pagination.totalPages > 1))}
+              {console.log('Does the button mount?:', !!(pagination && pagination.totalPages > 1) ? 'YES' : 'NO')}
               <ProductGrid products={backendProducts} onViewDetails={handleProductDetailsOpen} onWishlistClick={toggleWishlist} />
               {pagination && pagination.totalPages > 1 && (
                 <div className="flex justify-center items-center gap-4 mt-8 pb-4">
                   <button disabled={page <= 1} onClick={() => updateParams({ page: page - 1 })} className="px-4 py-2 border border-gray-300 rounded-full text-xs font-bold disabled:opacity-50">Previous</button>
                   <span className="text-xs font-bold text-gray-500">Page {page} of {pagination.totalPages}</span>
-                  <button disabled={page >= pagination.totalPages} onClick={() => updateParams({ page: page + 1 })} className="px-4 py-2 border border-gray-300 rounded-full text-xs font-bold disabled:opacity-50">Next</button>
+                  <button disabled={page >= pagination.totalPages} onClick={() => {
+                    console.log('========================');
+                    console.log('Button Click: Next');
+                    console.log('Old Page:', page);
+                    console.log('New Page:', page + 1);
+                    console.log('Updated URL params being set for page:', page + 1);
+                    console.log('========================');
+                    updateParams({ page: page + 1 });
+                  }} className="px-4 py-2 border border-gray-300 rounded-full text-xs font-bold disabled:opacity-50">Next</button>
                 </div>
               )}
             </>
