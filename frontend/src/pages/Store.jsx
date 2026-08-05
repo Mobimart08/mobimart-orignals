@@ -59,8 +59,8 @@ export const Store = () => {
         else queryParams.sort = 'popularity';
 
         const res = await productsService.getAll(queryParams);
-        setBackendProducts(res.data.data.data || res.data.data || []);
-        setPagination(res.data.data.pagination || null);
+        setBackendProducts(res.data.data || []);
+        setPagination(res.data.pagination || null);
       } catch (err) {
         console.error('Failed to fetch products', err);
         showToast('Failed to load products', 'error');

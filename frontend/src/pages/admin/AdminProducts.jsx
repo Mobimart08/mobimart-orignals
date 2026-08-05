@@ -68,8 +68,8 @@ const AdminProducts = () => {
         Object.entries(filters).filter(([, value]) => value !== '' && value !== null && value !== undefined)
       );
       const res = await adminService.getProducts({ ...cleanedParams, limit: 100 });
-      setProducts(res.data?.data?.data || []);
-      setPagination(res.data?.data?.pagination || null);
+      setProducts(res.data?.data || []);
+      setPagination(res.data?.pagination || null);
     } catch (err) {
       console.error('Failed to fetch products:', err);
     } finally {
