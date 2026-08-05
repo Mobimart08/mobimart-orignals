@@ -30,12 +30,15 @@ export const parseApiError = (error) => {
     const msg = data.message;
     
     // 1. Validation Errors
-    if (msg.includes('Validation failed') || data.error?.name === 'ValidationError') {
+    if (msg.toLowerCase().includes('validation failed') || data.error?.name === 'ValidationError') {
       // If there's a specific field error, try to extract it, else fallback
+      if (Array.isArray(data.errors) && data.errors.length > 0) {
+        return data.errors[0].message; // Send the specific validation message from Express Validator
+      }
       if (data.error?.errors) {
         const firstErrorKey = Object.keys(data.error.errors)[0];
         if (firstErrorKey && data.error.errors[firstErrorKey].message) {
-          return data.error.errors[firstErrorKey].message; // Send the specific validation message
+          return data.error.errors[firstErrorKey].message; // Send the specific validation message from Mongoose
         }
       }
       return 'Please fill all required fields correctly.';

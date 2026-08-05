@@ -26,6 +26,7 @@ const AdminAddProduct = () => {
   // Main Form State
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     description: '',
     brand: '',
     category: '',
@@ -66,6 +67,8 @@ const AdminAddProduct = () => {
       if (res.data.success) {
         setFormData({
           ...res.data.data,
+          brand: res.data.data.brand?._id || res.data.data.brand,
+          category: res.data.data.category?._id || res.data.data.category,
           availabilityStatus: res.data.data.isActive === false ? 'Out of Stock' : 'Active'
         });
         setOriginalImages(res.data.data.images || []);

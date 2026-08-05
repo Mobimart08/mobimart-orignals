@@ -20,6 +20,18 @@ const BasicInfoSection = ({ data, updateField }) => {
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Slug (Optional)</label>
+          <input
+            type="text"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm placeholder:text-gray-400"
+            placeholder="e.g. iphone-15-pro-max"
+            value={data.slug || ''}
+            onChange={(e) => updateField('slug', e.target.value)}
+          />
+          <p className="text-xs text-gray-500 mt-1">If left empty, a slug will be auto-generated from the product name.</p>
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Long Description</label>
           <textarea
             rows={8}

@@ -375,8 +375,15 @@ export const deleteProduct = async (id) => {
   const product = await Product.findById(id);
   if (!product) throw new NotFoundError('Product not found');
 
-  product.isActive = false;
-  await product.save();
+  if (product.status === 'Draft') {
+    // If it's a Draft, perform a hard delete
+    await Product.findByIdAndDelete(id);
+  } else {
+    // If it's not a Draft (e.g. Published, Archived, Hidden), soft-delete it
+    product.status = 'Archived';
+    product.isActive = false;
+    await product.save();
+  }
 };
 
 export const queryProducts = async (queryParams) => {

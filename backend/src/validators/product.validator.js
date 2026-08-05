@@ -62,6 +62,13 @@ export const createProductValidator = [
     .isLength({ min: 2, max: 150 })
     .withMessage('Name must be between 2 and 150 characters'),
 
+  body('slug')
+    .optional({ checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ max: 150 })
+    .withMessage('Slug cannot exceed 150 characters'),
+
   skuValidator,
 
   body('brand')
@@ -123,6 +130,7 @@ export const updateProductValidator = [
     .withMessage('Invalid product ID parameter'),
 
   body('name').optional().isString().trim().isLength({ min: 2, max: 150 }),
+  body('slug').optional().isString().trim().isLength({ max: 150 }),
   body('sku').optional().isString().trim().isLength({ min: 2, max: 40 }),
   body('brand').optional().isMongoId(),
   body('category').optional().isMongoId(),
