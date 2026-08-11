@@ -147,7 +147,7 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
         name: address.name,
         phone: address.phone,
         email: user.email,
-      addressLine1: address.addressLine1,
+        addressLine1: address.addressLine1,
         addressLine2: address.addressLine2,
         landmark: address.landmark,
         city: address.city,
@@ -335,3 +335,184 @@ export const updateOrderStatus = async (orderId, status) => {
   return order;
 };
 
+export const createBuyNowOrder = async ({ userId, addressId, paymentMethod, couponCode, deliveryMethod, notes, productId, selectedStorage, selectedColor, selectedRam, quantity }) => {
+  // Apply defaults for variant fields
+  const storage = selectedStorage || 'Default';
+  const color = selectedColor || 'Default';
+  const ram = selectedRam || null;
+
+  // 1. Buy Now-scoped idempotency guard — matches exact product + variant
+  const recentOrder = await Order.findOne({
+    userId,
+    orderStatus: ORDER_STATUS.PENDING,
+    createdAt: { $gte: new Date(Date.now() - 30000) },
+    'items.0.productId': productId,
+    'items.0.selectedStorage': storage,
+    'items.0.selectedColor': color,
+    'items.0.selectedRam': ram,
+  });
+  if (recentOrder) {
+    return recentOrder;
+  }
+
+  // 2. Fetch product from database — never trust frontend price
+  const product = await Product.findById(productId);
+  if (!product || !product.isActive) {
+    throw new ApiError(400, `Product ${product ? product.name : 'Unknown'} is unavailable`);
+  }
+
+  // 3. Validate variants against product options
+  if (product.storageOptions && product.storageOptions.length > 0) {
+    if (!selectedStorage || !product.storageOptions.includes(selectedStorage)) {
+      throw new ApiError(400, `Selected storage variant for ${product.name} is unavailable`);
+    }
+  }
+
+  if (product.colorOptions && product.colorOptions.length > 0) {
+    if (!selectedColor || !product.colorOptions.some(c => c.name === selectedColor)) {
+      throw new ApiError(400, `Selected color variant for ${product.name} is unavailable`);
+    }
+  }
+
+  if (product.ram && product.ram.length > 0) {
+    if (!selectedRam || !product.ram.includes(selectedRam)) {
+      throw new ApiError(400, `Selected RAM variant for ${product.name} is unavailable`);
+    }
+  }
+
+  // 4. Fetch and verify address
+  const address = await Address.findOne({ _id: addressId, userId });
+  if (!address) {
+    throw new ApiError(404, 'Shipping address not found or does not belong to user');
+  }
+
+  // 5. Fetch user for order snapshot
+  const user = await User.findById(userId).select('email phone name');
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  let couponRecorded = false;
+  let couponAppliedId = null;
+  let discount = 0;
+  let stockDecremented = false;
+
+  try {
+    // 6. Atomic stock decrement — same pattern as cart checkout
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: product._id, stock: { $gte: quantity } },
+      { $inc: { stock: -quantity } },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      throw new ApiError(400, `Insufficient stock for ${product.name}`);
+    }
+
+    stockDecremented = true;
+
+    // 7. Calculate pricing from database price
+    const priceAtPurchase = product.price;
+    const subtotal = priceAtPurchase * quantity;
+
+    // 8. Apply coupon if provided — reuses existing coupon service
+    if (couponCode) {
+      const couponResult = await validateAndApplyCoupon(couponCode, subtotal);
+      discount = couponResult.discount;
+      couponAppliedId = couponResult.couponId;
+      await recordCouponUsage(couponAppliedId);
+      couponRecorded = true;
+    }
+
+    // 9. Same pricing formula as cart checkout
+    const tax = 0;
+    const shipping = subtotal - discount > 999 ? 0 : 99;
+    const total = subtotal - discount + tax + shipping;
+
+    // 10. Build order item snapshot
+    const orderItems = [{
+      productId: product._id,
+      name: product.name,
+      sku: product.sku || null,
+      brandName: product.brandName || null,
+      categoryName: product.categoryName || null,
+      productCondition: product.productCondition || product.conditionType || null,
+      selectedStorage: storage,
+      selectedColor: color,
+      selectedRam: ram,
+      priceAtPurchase,
+      quantity,
+    }];
+
+    // 11. Create Order — same schema as cart checkout, Cart is never touched
+    const order = new Order({
+      orderId: generateOrderId(),
+      userId,
+      items: orderItems,
+      shippingAddress: {
+        name: address.name,
+        phone: address.phone,
+        email: user.email,
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        landmark: address.landmark,
+        city: address.city,
+        state: address.state,
+        pinCode: address.pinCode,
+        country: address.country,
+        addressType: address.label,
+      },
+      pricing: {
+        subtotal,
+        tax,
+        shipping,
+        discount,
+        total,
+      },
+      couponApplied: couponAppliedId,
+      paymentMethod,
+      deliveryMethod: deliveryMethod || 'Standard',
+      notes,
+    });
+
+    await order.save();
+
+    // 12. Send notification — reuses existing notification service
+    await createNotification({
+      userId,
+      type: NOTIFICATION_TYPES.ORDER_UPDATE,
+      title: 'Order Confirmed!',
+      message: `Your order ${order.orderId} has been placed successfully.`,
+      link: `/orders/${order.orderId}`,
+      metadata: { orderId: order._id }
+    });
+
+    // 13. Send confirmation email for COD — reuses existing email service
+    try {
+      if (user && order.paymentMethod?.toLowerCase() === 'cod') {
+        sendOrderConfirmationEmail(user.email, user.name, {
+          orderId: order.orderId,
+          items: order.items,
+          total: order.pricing.total,
+          shippingAddress: order.shippingAddress,
+          deliveryMethod: order.deliveryMethod,
+        }).catch(err => console.error('Order confirmation email error:', err));
+      }
+    } catch (emailErr) {
+      console.error('Failed to dispatch order confirmation email:', emailErr);
+    }
+
+    return order;
+
+  } catch (error) {
+    // Rollback coupon usage on failure
+    if (couponRecorded && couponAppliedId) {
+      await Coupon.updateOne({ _id: couponAppliedId }, { $inc: { usageCount: -1 } });
+    }
+    // Rollback stock on failure
+    if (stockDecremented) {
+      await Product.updateOne({ _id: product._id }, { $inc: { stock: quantity } });
+    }
+    throw error;
+  }
+};

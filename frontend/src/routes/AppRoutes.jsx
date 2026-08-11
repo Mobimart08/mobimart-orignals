@@ -16,6 +16,7 @@ const Store = lazy(() => import('../pages/Store'));
 const ProductPage = lazy(() => import('../pages/ProductPage'));
 const CartPage = lazy(() => import('../pages/CartPage'));
 const CheckoutPage = lazy(() => import('../pages/CheckoutPage'));
+const BuyNowCheckoutPage = lazy(() => import('../pages/BuyNowCheckoutPage'));
 const OrderSuccessPage = lazy(() => import('../pages/OrderSuccessPage'));
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
@@ -63,6 +64,7 @@ export const AppRoutes = () => {
                     <Route path="/product/:id" element={<ProductPage />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+                    <Route path="/checkout/buy-now" element={<ProtectedRoute><BuyNowCheckoutPage /></ProtectedRoute>} />
                     <Route path="/order-success" element={<ProtectedRoute><OrderSuccessPage /></ProtectedRoute>} />
                     <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
                     <Route path="/reset-password" element={<ResetPasswordPage />} />

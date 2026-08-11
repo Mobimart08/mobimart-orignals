@@ -45,8 +45,20 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam
 
   const handleBuyNow = () => {
     const { storage, colorName, ram } = resolveVariants();
-    addToCart(product, storage, colorName, 1, ram);
-    navigate('/checkout');
+    navigate('/checkout/buy-now', {
+      state: {
+        productId: product._id || product.id,
+        productName: product.name,
+        productImage: product.images?.[0]?.url || product.image,
+        productBrand: product.brand?.name || product.brand,
+        productPrice: product.price,
+        productOriginalPrice: product.originalPrice,
+        selectedStorage: storage,
+        selectedColor: colorName,
+        selectedRam: ram,
+        quantity: 1,
+      }
+    });
   };
 
   const content = (

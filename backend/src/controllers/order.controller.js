@@ -82,3 +82,32 @@ export const updateStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+export const placeBuyNowOrder = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { productId, selectedStorage, selectedColor, selectedRam, quantity, addressId, paymentMethod, couponCode, deliveryMethod, notes } = req.body;
+
+    const order = await orderService.createBuyNowOrder({
+      userId,
+      productId,
+      selectedStorage,
+      selectedColor,
+      selectedRam,
+      quantity,
+      addressId,
+      paymentMethod,
+      couponCode,
+      deliveryMethod,
+      notes,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Buy Now order placed successfully',
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

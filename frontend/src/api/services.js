@@ -103,6 +103,7 @@ export const ordersService = {
   getOrders: (params) => apiClient.get('/orders', { params }),
   getOrderById: (id) => apiClient.get(`/orders/${id}`),
   createOrder: (data) => apiClient.post('/orders', data),
+  createBuyNowOrder: (data) => apiClient.post('/orders/buy-now', data),
   cancelOrder: (id) => apiClient.post(`/orders/${id}/cancel`),
   updateOrderStatus: (id, data) => apiClient.patch(`/orders/${id}/status`, data),
 };
