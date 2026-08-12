@@ -29,11 +29,13 @@ export const MainLayout = ({ children }) => {
   const isHideBottomNav = 
     location.pathname.startsWith('/product/') || 
     location.pathname === '/checkout' ||
+    location.pathname === '/checkout/buy-now' ||
     location.pathname === '/order-success';
 
   const isCheckoutFlow = 
     location.pathname === '/cart' ||
     location.pathname === '/checkout' || 
+    location.pathname === '/checkout/buy-now' ||
     location.pathname === '/order-success' ||
     location.pathname === '/dashboard';
 
