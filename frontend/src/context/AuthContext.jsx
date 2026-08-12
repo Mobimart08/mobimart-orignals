@@ -11,7 +11,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [pendingBuyNow, setPendingBuyNow] = useState(null);
   const channelRef = useRef(null);
+  const navigateRef = useRef(null);
 
   const restoreSession = useCallback(async () => {
     // 1. Prevent React 18 Strict Mode double-invocation race conditions across mounts
@@ -163,6 +165,15 @@ export const AuthProvider = ({ children }) => {
     setUser(user);
     setAuthModalOpen(false);
     broadcastAuthEvent('session-updated');
+
+    // Auto-resume pending Buy Now action after successful login
+    setPendingBuyNow(prev => {
+      if (prev && navigateRef.current) {
+        setTimeout(() => navigateRef.current('/checkout/buy-now', { state: prev }), 0);
+      }
+      return null;
+    });
+
     return user;
   }, [broadcastAuthEvent]);
 
@@ -173,6 +184,15 @@ export const AuthProvider = ({ children }) => {
     setUser(user);
     setAuthModalOpen(false);
     broadcastAuthEvent('session-updated');
+
+    // Auto-resume pending Buy Now action after successful registration
+    setPendingBuyNow(prev => {
+      if (prev && navigateRef.current) {
+        setTimeout(() => navigateRef.current('/checkout/buy-now', { state: prev }), 0);
+      }
+      return null;
+    });
+
     return user;
   }, [broadcastAuthEvent]);
 
@@ -189,7 +209,7 @@ export const AuthProvider = ({ children }) => {
   }, [broadcastAuthEvent]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, authModalOpen, setAuthModalOpen }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, authModalOpen, setAuthModalOpen, pendingBuyNow, setPendingBuyNow, navigateRef }}>
       {children}
     </AuthContext.Provider>
   );

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ShoppingCart, CreditCard, Check, ArrowRight, ShieldCheck, Lock, Truck, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 /* ==========================================================================
    StickyCTA Component
@@ -12,6 +13,7 @@ import { useCart } from '../../context/CartContext';
 
 export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam }) => {
   const { addToCart } = useCart();
+  const { user, setAuthModalOpen, setPendingBuyNow } = useAuth();
   const navigate = useNavigate();
   const [toast, setToast] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -45,20 +47,27 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam
 
   const handleBuyNow = () => {
     const { storage, colorName, ram } = resolveVariants();
-    navigate('/checkout/buy-now', {
-      state: {
-        productId: product._id || product.id,
-        productName: product.name,
-        productImage: product.images?.[0]?.url || product.image,
-        productBrand: product.brand?.name || product.brand,
-        productPrice: product.price,
-        productOriginalPrice: product.originalPrice,
-        selectedStorage: storage,
-        selectedColor: colorName,
-        selectedRam: ram,
-        quantity: 1,
-      }
-    });
+    const buyNowState = {
+      productId: product._id || product.id,
+      productName: product.name,
+      productImage: product.images?.[0]?.url || product.image,
+      productBrand: product.brand?.name || product.brand,
+      productPrice: product.price,
+      productOriginalPrice: product.originalPrice,
+      selectedStorage: storage,
+      selectedColor: colorName,
+      selectedRam: ram,
+      quantity: 1,
+    };
+
+    if (!user) {
+      // Store the Buy Now intent and open login modal
+      setPendingBuyNow(buyNowState);
+      setAuthModalOpen(true);
+      return;
+    }
+
+    navigate('/checkout/buy-now', { state: buyNowState });
   };
 
   const content = (

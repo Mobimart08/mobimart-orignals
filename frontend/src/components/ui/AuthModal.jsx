@@ -4,7 +4,7 @@ import { X, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
 const AuthModal = () => {
-  const { authModalOpen, setAuthModalOpen, login, register } = useAuth();
+  const { authModalOpen, setAuthModalOpen, login, register, pendingBuyNow, setPendingBuyNow } = useAuth();
   const { showToast } = useToast();
   const [view, setView] = useState('login'); // 'login' | 'register' | 'forgot'
   const [showPassword, setShowPassword] = useState(false);
@@ -83,16 +83,23 @@ const AuthModal = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden relative">
         <button 
-          onClick={() => setAuthModalOpen(false)}
+          onClick={() => {
+            setPendingBuyNow(null);
+            setAuthModalOpen(false);
+          }}
           className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
         >
           <X className="w-6 h-6" />
         </button>
 
         <div className="p-6 sm:p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-1">
             {view === 'login' ? 'Welcome Back' : view === 'register' ? 'Create Account' : 'Reset Password'}
           </h2>
+          {pendingBuyNow && view !== 'forgot' && (
+            <p className="text-sm text-gray-500 mb-4">Please log in to continue with your purchase.</p>
+          )}
+          {!(pendingBuyNow && view !== 'forgot') && <div className="mb-5" />}
 
           {view === 'forgot' && forgotSuccess ? (
             <div className="text-center">

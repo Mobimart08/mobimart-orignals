@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { CartProvider } from '../context/CartContext';
 import { WishlistProvider } from '../context/WishlistContext';
 import { RecentlyViewedProvider } from '../context/RecentlyViewedContext';
@@ -9,6 +9,17 @@ import { AuthProvider } from '../context/AuthContext';
 import ScrollToTop from '../components/ui/ScrollToTop';
 import AuthModal from '../components/ui/AuthModal';
 import { ProtectedRoute, AdminRoute } from '../components/ui/ProtectedRoutes';
+import { useAuth } from '../context/AuthContext';
+
+// Bridges useNavigate (available inside Router) to AuthContext's navigateRef (outside Router)
+const NavigateRef = () => {
+  const navigate = useNavigate();
+  const { navigateRef } = useAuth();
+  useEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate, navigateRef]);
+  return null;
+};
 
 // Lazy load Pages
 const Home = lazy(() => import('../pages/Home'));
@@ -56,6 +67,7 @@ export const AppRoutes = () => {
           <CartProvider>
             <OrdersProvider>
               <Router>
+                <NavigateRef />
                 <ScrollToTop />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
