@@ -104,7 +104,7 @@ const env = {
   // Redis (future)
   REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
 
-  // Razorpay (future)
+  // Razorpay
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,

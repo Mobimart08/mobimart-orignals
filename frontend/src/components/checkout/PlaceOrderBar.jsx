@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowRight, Lock, Loader2 } from 'lucide-react';
 
 /* ==========================================================================
@@ -7,12 +8,18 @@ import { ArrowRight, Lock, Loader2 } from 'lucide-react';
    - Shows Grand Total on the left
    - "Place Order" button on the right with loading spinner state
    - Trust micro-text row underneath
+   - Rendered via portal to ensure fixed positioning works
    ========================================================================== */
 
 export const PlaceOrderBar = ({ total = 0, onPlaceOrder, isLoading = false, isDisabled = false }) => {
   const fmt = (val) => `₹${Number(val).toLocaleString('en-IN')}`;
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const bar = (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-100 py-3.5 px-4 sm:px-6 shadow-premium select-none">
       <div className="max-w-3xl mx-auto flex flex-col gap-2">
 
