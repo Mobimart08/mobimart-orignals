@@ -66,6 +66,9 @@ export const PlaceOrderBar = ({ total = 0, onPlaceOrder, isLoading = false, isDi
       </div>
     </div>
   );
+
+  if (!mounted) return null;
+  return createPortal(bar, document.body);
 };
 
 export default PlaceOrderBar;
