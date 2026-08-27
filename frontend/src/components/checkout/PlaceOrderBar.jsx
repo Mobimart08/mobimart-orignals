@@ -54,14 +54,14 @@ export const PlaceOrderBar = ({ total = 0, onPlaceOrder, isLoading = false, isDi
         </div>
 
         {/* Trust micro-row */}
-        <div className="flex items-center justify-center gap-3 sm:gap-5 text-[8px] text-gray-400 font-bold border-t border-gray-100/70 pt-2">
-          <span className="flex items-center gap-1"><Lock size={8} className="text-[#C5A880]" /> Secure Payment</span>
-          <span className="text-gray-200">|</span>
-          <span>🛡️ Certified Devices</span>
-          <span className="text-gray-200">|</span>
-          <span>↩️ Easy Returns</span>
-          <span className="text-gray-200">|</span>
-          <span>🚚 Fast Delivery</span>
+        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:gap-5 text-[8px] text-gray-400 font-bold border-t border-gray-100/70 pt-2">
+          <span className="flex items-center gap-1 whitespace-nowrap"><Lock size={8} className="text-[#C5A880]" /> Secure Payment</span>
+          <span className="text-gray-200 hidden sm:inline">|</span>
+          <span className="whitespace-nowrap">🛡️ Certified Devices</span>
+          <span className="text-gray-200 hidden sm:inline">|</span>
+          <span className="whitespace-nowrap">↩️ Easy Returns</span>
+          <span className="text-gray-200 hidden sm:inline">|</span>
+          <span className="whitespace-nowrap">🚚 Fast Delivery</span>
         </div>
       </div>
     </div>

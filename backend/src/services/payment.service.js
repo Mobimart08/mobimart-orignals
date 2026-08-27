@@ -141,6 +141,22 @@ export const verifyPayment = async (orderId, razorpayOrderId, razorpayPaymentId,
     return order;
   }
 
+  if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    throw new ApiError(400, 'Missing payment verification details');
+  }
+
+  // SECURITY FIX: Ensure the razorpayOrderId is present and matches the one saved on the order!
+  if (!order.razorpayOrderId || order.razorpayOrderId !== razorpayOrderId) {
+    console.log('\n==========================================');
+    console.log('PAYMENT VERIFICATION FAILED (SECURITY ALERT)');
+    console.log('==========================================');
+    console.log(`Order ID: ${order.orderId}`);
+    console.log(`Expected Razorpay Order ID: ${order.razorpayOrderId}`);
+    console.log(`Received Razorpay Order ID: ${razorpayOrderId}`);
+    console.log('==========================================\n');
+    throw new ApiError(400, 'Payment details do not match this order. Possible tampering detected.');
+  }
+
   // If we are in mock mode
   if (!razorpay) {
     if (env.NODE_ENV === 'production') {
@@ -159,7 +175,7 @@ export const verifyPayment = async (orderId, razorpayOrderId, razorpayPaymentId,
   const body = razorpayOrderId + '|' + razorpayPaymentId;
   const expectedSignature = crypto
     .createHmac('sha256', env.RAZORPAY_KEY_SECRET)
-    .update(body.toString())
+    .update(body)
     .digest('hex');
 
   const expectedBuffer = Buffer.from(expectedSignature, 'utf-8');
@@ -180,19 +196,42 @@ export const verifyPayment = async (orderId, razorpayOrderId, razorpayPaymentId,
     order.paymentStatus = PAYMENT_STATUS.FAILED;
     await order.save();
     
-    console.log('\n==========================================');
-    console.log('PAYMENT FAILED');
-    console.log('==========================================');
-    console.log('Status Code: 400');
-    console.log('Reason: Invalid payment signature');
-    console.log('Description: Signature verification failed during verifyPayment');
-    console.log('Metadata: {}');
-    console.log('==========================================\n');
-    
     throw new ApiError(400, 'Invalid payment signature');
   }
+
+  // SECONDARY VERIFICATION: Server-side API check
+  try {
+    const payment = await razorpay.payments.fetch(razorpayPaymentId);
+    const expectedAmount = Math.round(order.pricing.total * 100);
+    
+    // Validate Amount (Razorpay returns amount in paise)
+    if (payment.amount !== expectedAmount) {
+       throw new ApiError(400, 'Payment amount mismatch');
+    }
+
+    // Validate and enforce 'captured' status
+    if (payment.status === 'authorized') {
+      try {
+        // Explicitly capture to prevent authorized payments from auto-refunding after 5 days
+        await razorpay.payments.capture(razorpayPaymentId, expectedAmount, 'INR');
+      } catch (captureErr) {
+        // Ignore if already captured asynchronously by Razorpay auto-capture
+        if (captureErr.description && captureErr.description.includes('already been captured')) {
+          console.log('Payment was asynchronously captured by Razorpay.');
+        } else {
+          throw new ApiError(500, `Failed to capture authorized payment: ${captureErr.description || captureErr.message}`);
+        }
+      }
+    } else if (payment.status !== 'captured') {
+       throw new ApiError(400, `Invalid payment status: ${payment.status}`);
+    }
+  } catch (error) {
+    console.error('Razorpay API verification failed:', error);
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, 'Failed to verify payment details with gateway');
+  }
   
-  console.log('Verification Result: ✅ Signature Verified');
+  console.log('Verification Result: ✅ Signature & API Verified');
   console.log('==========================================\n');
 
   console.log('\n==========================================');

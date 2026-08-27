@@ -70,7 +70,7 @@ export const ProductGallery = ({ images = [] }) => {
 export const ThumbnailStrip = ({ images = [], activeIndex = 0, onSelect }) => {
   return (
     <div className="w-full overflow-x-auto no-scrollbar py-0.5">
-      <div className="flex items-center gap-3.5 justify-center">
+      <div className="flex items-center gap-3.5 justify-start md:justify-center w-max mx-auto px-2 md:px-0 md:w-full">
         {images.map((image, idx) => {
           const isActive = idx === activeIndex;
           const isLastItem = idx === images.length - 1;

@@ -47,23 +47,23 @@ export const CheckoutBar = ({ total = 0, onCheckout }) => {
         </div>
 
         {/* Secure Checkout Badges grid row */}
-        <div className="flex items-center justify-center gap-4 sm:gap-6 border-t border-gray-100/50 pt-2.5 mt-0.5 text-[8.5px] sm:text-[9px] text-gray-400 font-bold">
-          <span className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:gap-6 border-t border-gray-100/50 pt-2 mt-1 sm:mt-0.5 text-[8.5px] sm:text-[9px] text-gray-400 font-bold">
+          <span className="flex items-center gap-1 whitespace-nowrap">
             <Lock size={10} className="text-[#C5A880]" />
             <span>Secure Payment</span>
           </span>
-          <span className="text-neutral-200">|</span>
-          <span className="flex items-center gap-1">
+          <span className="text-neutral-200 hidden sm:inline">|</span>
+          <span className="flex items-center gap-1 whitespace-nowrap">
             <ShieldCheck size={10} className="text-[#C5A880]" />
             <span>Certified Devices</span>
           </span>
-          <span className="text-neutral-200">|</span>
-          <span className="flex items-center gap-1">
+          <span className="text-neutral-200 hidden sm:inline">|</span>
+          <span className="flex items-center gap-1 whitespace-nowrap">
             <Truck size={10} className="text-[#C5A880]" />
             <span>Fast Delivery</span>
           </span>
-          <span className="text-neutral-200">|</span>
-          <span className="flex items-center gap-1">
+          <span className="text-neutral-200 hidden sm:inline">|</span>
+          <span className="flex items-center gap-1 whitespace-nowrap">
             <RefreshCw size={10} className="text-[#C5A880]" />
             <span>Easy Returns</span>
           </span>

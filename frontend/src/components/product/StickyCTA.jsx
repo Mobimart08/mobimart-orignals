@@ -92,9 +92,9 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam
       {/* Sticky Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/50 pt-3 sm:pt-4 pb-[max(env(safe-area-inset-bottom),12px)] sm:pb-[max(env(safe-area-inset-bottom),16px)] px-4 sm:px-6 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] select-none animate-slide-up transition-all duration-300">
         <div className="max-w-5xl mx-auto flex flex-col gap-2.5">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 w-full">
 
-            <div className="flex flex-col text-left">
+            <div className="flex flex-col text-left w-full sm:w-auto">
               <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">
                 {[
                   selectedColor?.name || product.colorOptions?.[0]?.name || null,
@@ -107,24 +107,24 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam
               </span>
             </div>
 
-          <div className="flex-1 md:flex-initial flex items-center gap-3 sm:gap-4 justify-end">
+          <div className="w-full sm:w-auto flex-1 md:flex-initial flex items-center gap-2 sm:gap-4 justify-end">
             <button
               type="button"
               onClick={handleAddToCart}
-              className="flex-1 sm:flex-initial px-6 py-3 border border-neutral-300 hover:border-neutral-900 hover:bg-neutral-50 text-neutral-800 text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.97]"
+              className="flex-1 sm:flex-initial px-3 sm:px-6 py-2.5 sm:py-3 border border-neutral-300 hover:border-neutral-900 hover:bg-neutral-50 text-neutral-800 text-[11px] sm:text-xs font-bold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer shadow-sm active:scale-[0.97]"
               aria-label="Add product to shopping cart"
             >
               <ShoppingCart size={14} strokeWidth={2.4} />
-              <span>Add to Cart</span>
+              <span className="whitespace-nowrap">Add to Cart</span>
             </button>
 
             <button
               type="button"
               onClick={handleBuyNow}
-              className="flex-1 sm:flex-initial px-6 sm:px-8 py-3 bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-black rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md select-none group active:scale-[0.98]"
+              className="flex-1 sm:flex-initial px-4 sm:px-8 py-2.5 sm:py-3 bg-neutral-950 hover:bg-neutral-800 text-white text-[11px] sm:text-xs font-black rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md select-none group active:scale-[0.98]"
               aria-label="Purchase product now"
             >
-              <span>Buy Now</span>
+              <span className="whitespace-nowrap">Buy Now</span>
               <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
             </button>
           </div>
@@ -132,23 +132,23 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam
           </div>
           
           {/* Secure Checkout Badges grid row */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 border-t border-gray-100/50 pt-2.5 mt-0.5 text-[8.5px] sm:text-[9px] text-gray-400 font-bold">
-            <span className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:gap-6 border-t border-gray-100/50 pt-2 mt-1 sm:mt-0.5 text-[8.5px] sm:text-[9px] text-gray-400 font-bold">
+            <span className="flex items-center gap-1 whitespace-nowrap">
               <Lock size={10} className="text-[#C5A880]" />
               <span>Secure Payment</span>
             </span>
-            <span className="text-neutral-200">|</span>
-            <span className="flex items-center gap-1">
+            <span className="text-neutral-200 hidden sm:inline">|</span>
+            <span className="flex items-center gap-1 whitespace-nowrap">
               <ShieldCheck size={10} className="text-[#C5A880]" />
               <span>Certified Devices</span>
             </span>
-            <span className="text-neutral-200">|</span>
-            <span className="flex items-center gap-1">
+            <span className="text-neutral-200 hidden sm:inline">|</span>
+            <span className="flex items-center gap-1 whitespace-nowrap">
               <Truck size={10} className="text-[#C5A880]" />
               <span>Fast Delivery</span>
             </span>
-            <span className="text-neutral-200">|</span>
-            <span className="flex items-center gap-1">
+            <span className="text-neutral-200 hidden sm:inline">|</span>
+            <span className="flex items-center gap-1 whitespace-nowrap">
               <RefreshCw size={10} className="text-[#C5A880]" />
               <span>Easy Returns</span>
             </span>
