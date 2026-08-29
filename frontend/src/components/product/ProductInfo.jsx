@@ -1,17 +1,58 @@
 import React from 'react';
-import { Star, ShieldCheck } from 'lucide-react';
+import { Star, ShieldCheck, Share2 } from 'lucide-react';
+import { useToast } from '../../context/ToastContext';
 
 export const ProductInfo = ({ product }) => {
+  const { showToast } = useToast();
   const conditionLabel = product.productCondition || product.conditionType || product.condition || 'New';
   const priceLabel = typeof product.price === 'number' ? `₹ ${product.price.toLocaleString('en-IN')}` : product.price;
   const originalPriceLabel = typeof product.originalPrice === 'number' ? `₹ ${product.originalPrice.toLocaleString('en-IN')}` : product.originalPrice;
   const discountLabel = typeof product.discount === 'number' ? `${product.discount}% OFF` : product.discount;
 
+  const handleShare = async () => {
+    const productUrl = `${window.location.origin}/product/${product._id || product.id}`;
+    const shareData = {
+      title: product.name,
+      text: `${product.name} - MobiMart`,
+      url: productUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User cancelled share — do not show an error
+        if (err.name !== 'AbortError') {
+          showToast('Could not share product', 'error');
+        }
+      }
+    } else {
+      // Clipboard fallback for desktop / unsupported browsers
+      try {
+        await navigator.clipboard.writeText(productUrl);
+        showToast('Product link copied!', 'success');
+      } catch {
+        showToast('Could not copy link', 'error');
+      }
+    }
+  };
+
   return (
     <div className="w-full flex flex-col items-start text-left select-none bg-white p-5 rounded-3xl border border-gray-150/40 shadow-soft-ui">
-      <span className="inline-block px-3 py-1 text-[9px] sm:text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-250/30 rounded-full mb-3 uppercase tracking-wide">
-        {conditionLabel}
-      </span>
+      {/* Top row: condition badge + share button */}
+      <div className="w-full flex items-center justify-between mb-3">
+        <span className="inline-block px-3 py-1 text-[9px] sm:text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-250/30 rounded-full uppercase tracking-wide">
+          {conditionLabel}
+        </span>
+        <button
+          type="button"
+          onClick={handleShare}
+          aria-label="Share product"
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors shrink-0"
+        >
+          <Share2 size={15} className="text-gray-500" strokeWidth={2.2} />
+        </button>
+      </div>
 
       <h1 className="text-xl sm:text-2xl font-black text-neutral-900 leading-tight mb-2 tracking-tight">{product.name}</h1>
 
@@ -42,3 +83,4 @@ export const ProductInfo = ({ product }) => {
 };
 
 export default ProductInfo;
+
