@@ -48,6 +48,7 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
 
   // 3. Build Order Items and Check Stock
   let subtotal = 0;
+  let totalDeliveryCharge = 0;
   const orderItems = [];
   const decrementedItems = [];
   let couponRecorded = false;
@@ -104,9 +105,11 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
 
       decrementedItems.push({ productId: product._id, quantity: cartItem.quantity });
 
-      // Snapshot item price (flat schema has flat price)
+      // Snapshot item price and delivery charge
       const priceAtPurchase = product.price;
+      const deliveryChargeAtPurchase = product.deliveryCharge || 0;
       subtotal += priceAtPurchase * cartItem.quantity;
+      totalDeliveryCharge += deliveryChargeAtPurchase * cartItem.quantity;
       
       orderItems.push({
         productId: product._id,
@@ -119,6 +122,7 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
         selectedColor: cartItem.selectedColor,
         selectedRam: cartItem.selectedRam || null,
         priceAtPurchase,
+        deliveryChargeAtPurchase,
         quantity: cartItem.quantity,
       });
     }
@@ -135,8 +139,8 @@ export const createOrder = async ({ userId, addressId, paymentMethod, couponCode
     }
 
     const tax = 0; // Simplified for now
-    const shipping = subtotal - discount > 999 ? 0 : 99; // Free shipping over 999 to match frontend
-    const total = subtotal - discount + tax + shipping;
+    const shipping = totalDeliveryCharge;
+    const total = Math.max(0, subtotal - discount + tax + shipping);
 
     // 5. Create Order Document
     const order = new Order({
@@ -413,7 +417,9 @@ export const createBuyNowOrder = async ({ userId, addressId, paymentMethod, coup
 
     // 7. Calculate pricing from database price
     const priceAtPurchase = product.price;
+    const deliveryChargeAtPurchase = product.deliveryCharge || 0;
     const subtotal = priceAtPurchase * quantity;
+    const totalDeliveryCharge = deliveryChargeAtPurchase * quantity;
 
     // 8. Apply coupon if provided — reuses existing coupon service
     if (couponCode) {
@@ -426,8 +432,8 @@ export const createBuyNowOrder = async ({ userId, addressId, paymentMethod, coup
 
     // 9. Same pricing formula as cart checkout
     const tax = 0;
-    const shipping = subtotal - discount > 999 ? 0 : 99;
-    const total = subtotal - discount + tax + shipping;
+    const shipping = totalDeliveryCharge;
+    const total = Math.max(0, subtotal - discount + tax + shipping);
 
     // 10. Build order item snapshot
     const orderItems = [{
@@ -441,6 +447,7 @@ export const createBuyNowOrder = async ({ userId, addressId, paymentMethod, coup
       selectedColor: color,
       selectedRam: ram,
       priceAtPurchase,
+      deliveryChargeAtPurchase,
       quantity,
     }];
 

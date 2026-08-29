@@ -105,8 +105,8 @@ export const CartPage = () => {
     }
   }
 
-  const freeShippingThreshold = 100000;
-  const shippingCharge = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 99;
+  // Use backend-calculated delivery charges instead of hardcoded threshold
+  const shippingCharge = cartTotals.totalDeliveryCharge || 0;
   const totalSavings = catalogDiscount + couponDiscount;
   const total = Math.max(0, subtotal - couponDiscount + shippingCharge);
 

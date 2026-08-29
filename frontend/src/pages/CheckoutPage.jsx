@@ -100,6 +100,7 @@ export const CheckoutPage = () => {
   // Pricing calculations from backend Cart Context
   const subtotal = safeCartTotals.subtotal || 0;
   const originalSubtotal = safeCartTotals.originalSubtotal || 0;
+  const baseDeliveryCharge = safeCartTotals.totalDeliveryCharge || 0;
 
   // Coupon state
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -137,11 +138,10 @@ export const CheckoutPage = () => {
     setPaymentErrors({});
   };
 
-  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const baseDeliveryCharge = isFreeShipping ? 0 : deliveryCharge;
-  const codHandlingFee = paymentMethod === 'cod' ? COD_FEE : 0;
+  const isFreeShipping = baseDeliveryCharge === 0;
+  const codHandlingFee = 0;
   const totalSavings = (originalSubtotal - subtotal) + couponDiscount;
-  const total = Math.max(0, subtotal - couponDiscount + baseDeliveryCharge + codHandlingFee);
+  const total = Math.max(0, subtotal - couponDiscount + baseDeliveryCharge);
 
   // Payment validation
   const validatePayment = () => {

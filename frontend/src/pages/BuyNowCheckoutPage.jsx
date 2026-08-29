@@ -123,11 +123,11 @@ export const BuyNowCheckoutPage = () => {
     couponDiscount = appliedCoupon.discount;
   }
 
-  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const baseDeliveryCharge = isFreeShipping ? 0 : deliveryCharge;
-  const codHandlingFee = paymentMethod === 'cod' ? COD_FEE : 0;
+  const baseDeliveryCharge = (product.deliveryCharge || 0) * quantity;
+  const isFreeShipping = baseDeliveryCharge === 0;
+  const codHandlingFee = 0;
   const totalSavings = (originalSubtotal - subtotal) + couponDiscount;
-  const total = Math.max(0, subtotal - couponDiscount + baseDeliveryCharge + codHandlingFee);
+  const total = Math.max(0, subtotal - couponDiscount + baseDeliveryCharge);
 
   // Address handlers
   const handleSaveAddress = async (newAddr) => {

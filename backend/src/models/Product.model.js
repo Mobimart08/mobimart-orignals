@@ -121,6 +121,12 @@ const productSchema = new mongoose.Schema(
       min: [0, 'Price cannot be negative'],
     },
 
+    deliveryCharge: {
+      type: Number,
+      default: 0,
+      min: [0, 'Delivery charge cannot be negative'],
+    },
+
     images: {
       type: [imageSchema],
       required: [true, 'At least one product image must be provided'],

@@ -14,8 +14,7 @@ export const DELIVERY_OPTIONS = [
     icon: Truck,
     label: 'Standard Delivery',
     sublabel: 'Delivered in 3–5 business days',
-    charge: 0,      // free (or ₹99 if subtotal < threshold — handled by parent)
-    chargeLabel: 'FREE',
+    chargeLabel: 'Product-based',
     accentColor: 'text-green-600',
   },
   {
@@ -23,8 +22,7 @@ export const DELIVERY_OPTIONS = [
     icon: Zap,
     label: 'Express Delivery',
     sublabel: 'Delivered in 1–2 business days',
-    charge: 199,
-    chargeLabel: '₹199',
+    chargeLabel: 'Product-based',
     accentColor: 'text-blue-600',
   },
   {
@@ -32,10 +30,9 @@ export const DELIVERY_OPTIONS = [
     icon: Clock,
     label: 'Same Day Delivery',
     sublabel: 'Order before 12 PM · Available in select cities',
-    charge: 399,
-    chargeLabel: '₹399',
+    chargeLabel: 'Product-based',
     accentColor: 'text-orange-500',
-    disabled: false, // can be toggled by parent based on city logic
+    disabled: false,
   },
 ];
 
@@ -93,7 +90,7 @@ export const DeliveryMethod = ({ selected, onChange }) => {
 
               {/* Charge */}
               <span className={`text-[11px] font-black shrink-0 ${
-                opt.charge === 0 ? 'text-green-600' : isSelected ? 'text-neutral-950' : 'text-gray-500'
+                isSelected ? 'text-neutral-950' : 'text-gray-500'
               }`}>
                 {isDisabled ? 'N/A' : opt.chargeLabel}
               </span>

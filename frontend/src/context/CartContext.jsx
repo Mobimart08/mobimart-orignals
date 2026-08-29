@@ -22,18 +22,21 @@ export const CartProvider = ({ children }) => {
     let subtotal = 0;
     let originalSubtotal = 0;
     let totalItems = 0;
+    let totalDeliveryCharge = 0;
 
     items.forEach(item => {
       totalItems += item.quantity;
       const p = item.product || item.productId;
       const price = p?.price || 0;
       const mrp = p?.originalPrice || p?.mrp || price;
+      const deliveryCharge = p?.deliveryCharge || 0;
       subtotal += price * item.quantity;
       originalSubtotal += mrp * item.quantity;
+      totalDeliveryCharge += deliveryCharge * item.quantity;
     });
 
     setCartItems(items);
-    setCartTotals({ subtotal, originalSubtotal, totalItems });
+    setCartTotals({ subtotal, originalSubtotal, totalItems, totalDeliveryCharge });
   }, []);
 
   const applyServerCart = useCallback((data) => {
@@ -42,6 +45,7 @@ export const CartProvider = ({ children }) => {
       subtotal: data.subtotal || 0,
       originalSubtotal: data.originalSubtotal || 0,
       totalItems: data.totalItems || 0,
+      totalDeliveryCharge: data.totalDeliveryCharge || 0,
     });
   }, []);
 

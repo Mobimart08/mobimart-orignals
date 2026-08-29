@@ -30,6 +30,18 @@ const PricingSection = ({ data, updateField }) => {
               onKeyDown={handleNumericKeyDown}
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Charge (₹)</label>
+            <input
+              type="number"
+              min="0"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm"
+              placeholder="e.g. 99 (0 for Free)"
+              value={data.deliveryCharge || ''}
+              onChange={(e) => updateField('deliveryCharge', e.target.value)}
+              onKeyDown={handleNumericKeyDown}
+            />
+          </div>
         </div>
       </div>
     </div>

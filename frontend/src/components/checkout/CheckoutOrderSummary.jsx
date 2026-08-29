@@ -33,7 +33,6 @@ export const CheckoutOrderSummary = ({
       color: deliveryCharge === 0 ? 'text-green-600' : 'text-neutral-700',
     },
     codFee > 0 && { label: 'COD Handling Fee',          value: fmt(codFee),             color: 'text-neutral-700' },
-    { label: 'GST (18% Incl.)',           value: fmt(gst),                color: 'text-gray-400',    note: true },
   ].filter(Boolean);
 
   return (
@@ -41,18 +40,6 @@ export const CheckoutOrderSummary = ({
       <div className="flex items-center gap-1.5 border-b border-gray-100 pb-3">
         <BadgeCheck size={15} className="text-[#C5A880]" />
         <h2 className="text-xs sm:text-sm font-extrabold text-neutral-950 uppercase tracking-wider">Order Summary</h2>
-      </div>
-
-      {/* Free Shipping badge */}
-      <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[9.5px] font-black border ${
-        isFreeShipping
-          ? 'bg-green-50 border-green-100 text-green-700'
-          : 'bg-amber-50 border-amber-100 text-amber-700'
-      }`}>
-        <Truck size={12} strokeWidth={2.5} />
-        {isFreeShipping
-          ? '✓ Free Shipping Unlocked on This Order'
-          : `Add more items to unlock Free Shipping`}
       </div>
 
       {/* Price rows */}

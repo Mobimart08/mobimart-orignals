@@ -8,24 +8,26 @@ import Cart from '../models/Cart.model.js';
 import Product from '../models/Product.model.js';
 import { BadRequestError, NotFoundError } from '../utils/ApiError.js';
 
-const POPULATE_FIELDS = 'name price images stock slug';
+const POPULATE_FIELDS = 'name price images stock slug deliveryCharge';
 
 const formatCartResponse = (cartObj) => {
   let subtotal = 0;
   let originalSubtotal = 0;
   let totalItems = 0;
+  let totalDeliveryCharge = 0;
 
   if (cartObj && cartObj.items) {
     cartObj.items.forEach(item => {
       if (item.productId) {
         subtotal += (item.productId.price || 0) * item.quantity;
         originalSubtotal += (item.productId.originalPrice || item.productId.price || 0) * item.quantity;
+        totalDeliveryCharge += (item.productId.deliveryCharge || 0) * item.quantity;
         totalItems += item.quantity;
       }
     });
   }
 
-  return { ...cartObj, subtotal, originalSubtotal, totalItems };
+  return { ...cartObj, subtotal, originalSubtotal, totalDeliveryCharge, totalItems };
 };
 
 /**

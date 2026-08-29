@@ -33,6 +33,7 @@ const AdminAddProduct = () => {
     category: '',
     productCondition: 'New',
     price: '',
+    deliveryCharge: '',
     stock: '',
     availabilityStatus: 'Active',
     images: [],
@@ -130,6 +131,7 @@ const AdminAddProduct = () => {
       const payload = { 
         ...formData,
         price: Number(formData.price) || 0,
+        deliveryCharge: formData.deliveryCharge !== '' ? Math.max(0, Number(formData.deliveryCharge) || 0) : 0,
         stock: Number(formData.stock) || 0,
         isActive: formData.availabilityStatus === 'Active',
       };

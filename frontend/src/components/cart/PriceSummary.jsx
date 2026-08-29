@@ -32,48 +32,6 @@ export const PriceSummary = ({
         Order Summary
       </h3>
 
-      {/* 1. Free Shipping Progress Section */}
-      <div className="flex flex-col gap-3 bg-[#FAF9F6] p-4 rounded-2xl border border-neutral-100 shadow-sm relative overflow-hidden">
-        {/* Glow effect if free shipping unlocked */}
-        {isFreeShipping && <div className="absolute inset-0 bg-green-50/30"></div>}
-        
-        <div className="flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-neutral-900 relative z-10">
-          <span className="flex items-center gap-1.5">
-            <Truck size={15} className={isFreeShipping ? "text-green-600" : "text-[#C5A880]"} strokeWidth={2.4} />
-            <span>Free Shipping</span>
-          </span>
-          <span className={isFreeShipping ? "text-green-600" : "text-gray-400"}>
-            {isFreeShipping ? 'Unlocked' : `${progressPercent}%`}
-          </span>
-        </div>
-
-        {/* Premium Progress track */}
-        <div className="w-full h-2.5 bg-neutral-200/50 rounded-full overflow-hidden relative z-10 shadow-inner">
-          <div 
-            className={`h-full rounded-full transition-all duration-700 ease-out relative ${
-              isFreeShipping 
-                ? 'bg-gradient-to-r from-green-400 to-green-500' 
-                : 'bg-gradient-to-r from-[#C5A880] to-[#E3CBA8]'
-            }`}
-            style={{ width: `${progressPercent}%` }}
-          >
-            {/* Shimmer effect */}
-            <div className="absolute top-0 inset-x-0 h-full bg-white/20 animate-pulse"></div>
-          </div>
-        </div>
-
-        {/* Dynamic tagline */}
-        <p className={`text-[10px] sm:text-[11px] font-black mt-1 flex items-center gap-1.5 relative z-10 ${
-          isFreeShipping ? 'text-green-700' : 'text-neutral-600'
-        }`}>
-          {isFreeShipping ? (
-            <span>✓ Congratulations! You have unlocked Free Shipping.</span>
-          ) : (
-            <span>Add <span className="text-amber-600">{formatVal(diffToFree)}</span> more to unlock Free Shipping.</span>
-          )}
-        </p>
-      </div>
-
       {/* 2. Total Savings Highlight Card */}
       {totalSavings > 0 && (
         <div className="bg-amber-50/65 border border-amber-250/20 rounded-2xl p-3.5 flex items-start gap-2.5">
@@ -119,12 +77,6 @@ export const PriceSummary = ({
           <span className={shippingCharge === 0 ? 'text-green-600 font-bold' : 'text-neutral-900 font-extrabold'}>
             {shippingCharge === 0 ? 'FREE' : formatVal(shippingCharge)}
           </span>
-        </div>
-
-        {/* Estimated Tax (GST at 18% included in prices) */}
-        <div className="flex items-center justify-between text-gray-400">
-          <span>Estimated GST (18% Incl.)</span>
-          <span>{formatVal(Math.round((total * 18) / 118))}</span>
         </div>
       </div>
 

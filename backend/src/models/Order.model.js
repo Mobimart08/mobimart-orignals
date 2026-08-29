@@ -23,6 +23,7 @@ const orderItemSchema = new mongoose.Schema({
   selectedColor: { type: String, required: true },
   selectedRam: { type: String, default: null },
   priceAtPurchase: { type: Number, required: true },
+  deliveryChargeAtPurchase: { type: Number, default: 0 },
   quantity: { type: Number, required: true, min: 1 },
 }, { _id: false });
 
