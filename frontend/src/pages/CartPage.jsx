@@ -25,7 +25,7 @@ import AddressDrawer from '../components/cart/AddressDrawer';
 
 export const CartPage = () => {
   const navigate = useNavigate();
-  const { cartItems, updateQuantity, removeFromCart, clearCart, cartCount } = useCart();
+  const { cartItems, cartTotals, updateQuantity, removeFromCart, clearCart, cartCount } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
   const { user } = useAuth();
 
