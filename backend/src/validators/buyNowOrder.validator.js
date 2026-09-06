@@ -33,8 +33,15 @@ export const buyNowOrderValidator = [
     .withMessage('Valid Address ID is required'),
 
   body('paymentMethod')
-    .isIn(['Razorpay', 'COD'])
-    .withMessage('Valid payment method is required (Razorpay or COD)'),
+    .custom((value) => {
+      if (value === 'COD') {
+        throw new Error('Cash on Delivery is no longer available. Please use online payment.');
+      }
+      if (value !== 'Razorpay') {
+        throw new Error('Valid payment method is required (Razorpay)');
+      }
+      return true;
+    }),
 
   body('couponCode')
     .optional({ nullable: true })

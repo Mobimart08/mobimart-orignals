@@ -32,7 +32,6 @@ export const CheckoutOrderSummary = ({
       value: deliveryCharge === 0 ? 'FREE' : fmt(deliveryCharge),
       color: deliveryCharge === 0 ? 'text-green-600' : 'text-neutral-700',
     },
-    codFee > 0 && { label: 'COD Handling Fee',          value: fmt(codFee),             color: 'text-neutral-700' },
   ].filter(Boolean);
 
   return (

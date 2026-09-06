@@ -16,7 +16,6 @@ import CheckoutOrderSummary from '../components/checkout/CheckoutOrderSummary';
 import PlaceOrderBar from '../components/checkout/PlaceOrderBar';
 import CouponCard from '../components/cart/CouponCard';
 
-const COD_FEE = 49;
 const FREE_SHIPPING_THRESHOLD = 100000;
 
 export const BuyNowCheckoutPage = () => {
@@ -214,19 +213,13 @@ export const BuyNowCheckoutPage = () => {
       quantity: buyNowItem.quantity || 1,
       addressId: selectedAddressId,
       deliveryMethod: deliveryMethod === 'sameday' ? 'Express' : deliveryMethod.charAt(0).toUpperCase() + deliveryMethod.slice(1),
-      paymentMethod: paymentMethod === 'cod' ? 'COD' : 'Razorpay',
+      paymentMethod: 'Razorpay',
       couponCode: appliedCoupon?.code,
     };
 
     try {
       const res = await ordersService.createBuyNowOrder(orderPayload);
       const newOrder = res.data.data;
-
-      if (orderPayload.paymentMethod === 'COD') {
-        await fetchOrders();
-        navigate('/order-success', { state: { order: newOrder } });
-        return;
-      }
 
       // Initiate Razorpay Payment — reuses existing payment service
       const paymentRes = await paymentService.initiatePayment(newOrder.orderId);

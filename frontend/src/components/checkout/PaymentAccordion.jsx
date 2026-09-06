@@ -4,7 +4,6 @@ import UPIPayment from './UPIPayment';
 import CardPayment from './CardPayment';
 import NetBankingPayment from './NetBankingPayment';
 import WalletPayment from './WalletPayment';
-import CODPayment from './CODPayment';
 
 /* ==========================================================================
    PaymentAccordion Component
@@ -19,7 +18,6 @@ const PAYMENT_METHODS = [
   { id: 'debit',     label: 'Debit Card',     icon: CreditCard,  subtitle: 'All major banks' },
   { id: 'netbanking',label: 'Net Banking',    icon: Landmark,    subtitle: 'HDFC, ICICI, SBI + more' },
   { id: 'wallet',    label: 'Wallet',         icon: Wallet,      subtitle: 'Amazon Pay, MobiKwik' },
-  { id: 'cod',       label: 'Cash on Delivery',icon: Banknote,  subtitle: '₹49 handling fee applies' },
 ];
 
 export const PaymentAccordion = ({ selectedMethod, onMethodChange, methodData, onMethodDataChange, errors = {} }) => {
@@ -65,8 +63,6 @@ export const PaymentAccordion = ({ selectedMethod, onMethodChange, methodData, o
             onChange={(v) => onMethodDataChange({ ...methodData, wallet: v })}
           />
         );
-      case 'cod':
-        return <CODPayment />;
       default:
         return null;
     }

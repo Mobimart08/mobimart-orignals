@@ -8,8 +8,7 @@ const AdminSettings = () => {
   const [settings, setSettings] = useState({
     storeName: 'MobiMart',
     supportEmail: 'support@mobimart.com',
-    freeShippingThreshold: 1000,
-    enableCod: true
+    freeShippingThreshold: 1000
   });
 
   const fetchSettings = async () => {
@@ -109,22 +108,7 @@ const AdminSettings = () => {
               />
             </div>
             
-            <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-xl bg-neutral-50/50">
-              <div>
-                <h3 className="text-sm font-medium text-neutral-900">Enable Cash on Delivery (COD)</h3>
-                <p className="text-xs text-neutral-500">Allow customers to pay upon delivery.</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  name="enableCod"
-                  checked={settings.enableCod}
-                  onChange={handleChange}
-                  className="sr-only peer" 
-                />
-                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gold-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-accent"></div>
-              </label>
-            </div>
+
           </div>
         </div>
 
