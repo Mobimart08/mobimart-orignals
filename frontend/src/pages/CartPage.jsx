@@ -27,7 +27,7 @@ export const CartPage = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotals, updateQuantity, removeFromCart, clearCart, cartCount } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
-  const { user } = useAuth();
+  const { user, setAuthModalOpen } = useAuth();
 
   // Drawer/Modal visibility state
   const [isAddressDrawerOpen, setIsAddressDrawerOpen] = useState(false);
@@ -127,6 +127,10 @@ export const CartPage = () => {
   // Checkout handler: opens success modal, clears cart on close
   // ──────────────────────────────────────────────────────────────
   const handleCheckout = () => {
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
     navigate('/checkout', { state: { shippingAddress } });
   };
 

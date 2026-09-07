@@ -13,7 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam }) => {
   const { addToCart } = useCart();
-  const { user, setAuthModalOpen, setPendingBuyNow } = useAuth();
+  const { user, loading, setAuthModalOpen, setPendingBuyNow } = useAuth();
   const navigate = useNavigate();
   const [toast, setToast] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -59,6 +59,10 @@ export const StickyCTA = ({ product, selectedStorage, selectedColor, selectedRam
       selectedRam: ram,
       quantity: 1,
     };
+
+    if (loading) {
+      return;
+    }
 
     if (!user) {
       // Store the Buy Now intent and open login modal
