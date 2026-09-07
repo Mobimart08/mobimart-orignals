@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { addressService, couponService, ordersService, paymentService } from '../api/services';
 import MainLayout from '../layouts/MainLayout';
 import { useToast } from '../context/ToastContext';
+import { parseApiError } from '../utils/errorHandler';
 
 // Checkout-specific components
 import CheckoutHeader from '../components/checkout/CheckoutHeader';
@@ -243,7 +244,7 @@ export const CheckoutPage = () => {
 
     } catch (err) {
       console.error(err);
-      showToast(err.response?.data?.message || 'Failed to place order', 'error');
+      showToast(parseApiError(err), 'error');
     } finally {
       setIsLoading(false);
     }

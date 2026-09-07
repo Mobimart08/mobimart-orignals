@@ -5,6 +5,8 @@ export const createOrderValidator = [
     .isMongoId()
     .withMessage('Valid Address ID is required'),
   body('paymentMethod')
+    .exists({ checkFalsy: true })
+    .withMessage('Payment method is required')
     .custom((value) => {
       if (value === 'COD') {
         throw new Error('Cash on Delivery is no longer available. Please use online payment.');
